@@ -8,8 +8,8 @@ To build executable:
 To compile and run tests:
     $ mvn install
 
-To run executable jar file: 
-    $ java -cp target/cse223project-1.0-SNAPSHOT.jar com.wysiwyg.App
+To run server:
+    $ sh target/bin/webapp
 
 To clean:
     $ mvn clean
