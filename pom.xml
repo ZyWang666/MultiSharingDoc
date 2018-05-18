@@ -16,6 +16,7 @@
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
     <tomcat.version>8.5.23</tomcat.version>
+    <json-io.version>4.1.9</json-io.version>
   </properties>
 
   <dependencies>
@@ -55,6 +56,19 @@
       <artifactId>tomcat-jsp-api</artifactId>
       <version>8.5.31</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>19.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.cedarsoftware</groupId>
+      <artifactId>json-io</artifactId>
+      <version>${json-io.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
