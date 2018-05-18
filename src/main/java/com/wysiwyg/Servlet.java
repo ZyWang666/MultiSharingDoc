@@ -24,6 +24,10 @@ public class Servlet extends HttpServlet {
 
     protected MetadataManager metadataManager;
 
+    public Servlet() {
+        metadataManager = new MetadataManagerImpl();
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
