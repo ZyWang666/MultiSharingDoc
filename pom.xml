@@ -69,7 +69,20 @@
       <version>${json-io.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.ahmadsoft</groupId>
+      <artifactId>ropes</artifactId>
+      <version>1.2.5</version>
+    </dependency>
+    
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>localrepository</id>
+      <url>file://${project.basedir}/lib</url>
+    </repository>
+  </repositories>
 
   <build>
     <finalName>embeddedTomcatSample</finalName>

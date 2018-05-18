@@ -13,3 +13,6 @@ To run server:
 
 To clean:
     $ mvn clean
+
+To deploy local lib/repo:
+    $ mvn deploy:deploy-file -Durl=file:lib/ -Dfile=ropes.jar -DgroupId=org.ahmadsoft.ropes -DartifactId=ropes -Dpackaging=jar -Dversion=1.2.5
