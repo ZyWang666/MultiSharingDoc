@@ -1,12 +1,14 @@
+com/wysiwyg/operations/OperationImpl.class
+com/wysiwyg/MetadataServlet.class
+com/wysiwyg/DocumentServlet.class
+com/wysiwyg/ot/OperationalTransformation.class
 com/wysiwyg/meta/MetadataManager.class
 com/wysiwyg/structs/Opcode.class
-com/wysiwyg/operations/OperationImpl.class
 com/wysiwyg/structs/Document.class
-com/wysiwyg/Servlet.class
+com/wysiwyg/meta/DocumentMapSingleton.class
 com/wysiwyg/structs/Mutation.class
 com/wysiwyg/Main.class
 com/wysiwyg/operations/Operation.class
 com/wysiwyg/structs/SyncInfo.class
 com/wysiwyg/meta/MetadataManagerImpl.class
 com/wysiwyg/ot/OperationalTransformation$ConsumeMutationQueue.class
-com/wysiwyg/ot/OperationalTransformation.class
