@@ -16,15 +16,15 @@ import com.wysiwyg.meta.MetadataManagerImpl;
 import com.wysiwyg.structs.Document;
 
 @WebServlet(
-        name = "Servlet",
+        name = "MetadataServlet",
         urlPatterns = {"/documents"}
     )
-public class Servlet extends HttpServlet {
+public class MetadataServlet extends HttpServlet {
     private static String CREATE_DOCUMENT = "name";
 
     protected MetadataManager metadataManager;
 
-    public Servlet() {
+    public MetadataServlet() {
         metadataManager = new MetadataManagerImpl();
     }
 

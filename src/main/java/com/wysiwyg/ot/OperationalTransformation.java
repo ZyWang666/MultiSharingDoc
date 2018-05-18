@@ -29,9 +29,9 @@ public class OperationalTransformation {
             while (true) {
                 if (!mutationQueue.isEmpty()) {
                     Mutation mutation = mutationQueue.poll();
-                    if (mutation.getOpcode().equals(Opcode.INSERT)) {
+                    if (mutation.opcode.equals(Opcode.INSERT)) {
                         operationInstance.insert(mutation);
-                    } else if (mutation.getOpcode().equals(Opcode.DELETE)) {
+                    } else if (mutation.opcode.equals(Opcode.DELETE)) {
                         operationInstance.delete(mutation);
                     }
                 }
