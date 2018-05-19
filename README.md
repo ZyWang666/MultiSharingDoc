@@ -18,4 +18,4 @@ To install without tests:
     $ mvn install -DskipTests
 
 To deploy local lib/repo:
-    $ mvn deploy:deploy-file -Durl=file:lib/ -Dfile=ropes.jar -DgroupId=org.ahmadsoft.ropes -DartifactId=ropes -Dpackaging=jar -Dversion=1.2.5
+    $ mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile=<PATH-TO-JAR-FILE> -DgroupId=org.ahmadsoft -DartifactId=ropes -Dversion=1.2.5 -Dpackaging=jar -DlocalRepositoryPath=<PATH-TO-LIB-DIRECTORY>
