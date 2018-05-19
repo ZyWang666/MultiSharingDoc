@@ -13,14 +13,14 @@ import org.apache.http.util.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-
-public class UserServletTest {
-    private static final String USER_NAME   = "test";
-    private static final String URL         = "http://localhost:8080/users";
+import com.wysiwyg.structs.Document;
+public class MetadataServletTest {
+    private static final String DOCUMENT_NAME   = "test";
+    private static final String URL             = "http://localhost:8080/documents";
     @Test
-    public void addUserTest() {
+    public void addDocumentTest() {
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(URL+"?user="+USER_NAME);
+        HttpPost httpPost = new HttpPost(URL+"?name="+DOCUMENT_NAME);
         try {
             CloseableHttpResponse response1 = client.execute(httpPost);
             Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
@@ -30,8 +30,8 @@ public class UserServletTest {
     }
 
     @Test
-    public void getUserTest() {
-        addUserTest();
+    public void getDocumentTest() {
+        addDocumentTest();
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(URL);
     
@@ -40,11 +40,7 @@ public class UserServletTest {
             Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
             HttpEntity entity1 = response1.getEntity();
             String bodyAsString = EntityUtils.toString(entity1);
-            Gson gson = new Gson();
-            Type listType = new TypeToken<ArrayList<String>>(){}.getType();
-            System.out.println(bodyAsString);
-            List<String> users = gson.fromJson(bodyAsString, listType);
-            Assert.assertTrue(users.contains(USER_NAME));
+            Assert.assertTrue(bodyAsString.contains(new StringBuffer(DOCUMENT_NAME)));
             // and ensure it is fully consumed (this is how stream is released.
             EntityUtils.consume(entity1);
         } catch (IOException e) {
