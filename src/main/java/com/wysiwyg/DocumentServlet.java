@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.lang.Integer;
 import java.util.List;
 
+import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -54,10 +55,11 @@ public class DocumentServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        Document document = metadataManager.getDocument(req.getParameter(DOCUMENT_ID));
-        int pos = Integer.valueOf(req.getParameter(MODIFY_POSITION)).intValue();
-        String payload = req.getParameter(MODIFY_PAYLOAD);
-        Opcode op = req.getParameter(OPCODE).equals("ins") ? Opcode.INSERT : Opcode.DELETE;
+        JsonObject data = new Gson().fromJson(req.getReader(), JsonObject.class);
+        Document document = metadataManager.getDocument(data.get(DOCUMENT_ID).getAsString());
+        int pos = Integer.valueOf(data.get(MODIFY_POSITION).getAsString()).intValue();
+        String payload = data.get(MODIFY_PAYLOAD).getAsString();
+        Opcode op = data.get(OPCODE).getAsString().equals("ins") ? Opcode.INSERT : Opcode.DELETE;
         Mutation mutation = new Mutation(op, document.documentId, pos, payload);
         operationalTransformation.enqueueMutation(mutation);
    }

@@ -10,6 +10,7 @@ import org.apache.http.impl.client.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.*;
 import org.apache.http.util.*;
+import org.apache.http.entity.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -28,6 +29,16 @@ public class DocumentServletTest {
                                             + "&pos=0"
                                             + "&payload="+DOCUMENT_DATA
                                             + "&op=ins");
+
+
+        String json = String.format("{\"documentId\":\"%s\",\"pos\":%d,\"payload\":%s,\"op\":%s}", DOCUMENT_NAME, 0, DOCUMENT_DATA, "ins");
+        try {
+            StringEntity entity = new StringEntity(json);
+            httpPost.setEntity(entity);
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
+     
         try {
             CloseableHttpResponse response1 = client.execute(httpPost);
             Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
@@ -47,7 +58,6 @@ public class DocumentServletTest {
             Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
             HttpEntity entity1 = response1.getEntity();
             String bodyAsString = EntityUtils.toString(entity1);
-            System.out.println("bodyAsString " + bodyAsString);
             Assert.assertTrue(bodyAsString.contains(new StringBuffer(DOCUMENT_DATA)));
             // and ensure it is fully consumed (this is how stream is released.
             EntityUtils.consume(entity1);
