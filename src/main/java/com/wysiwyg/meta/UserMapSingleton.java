@@ -26,6 +26,9 @@ public class UserMapSingleton {
     }
 
     public static synchronized boolean addUser(String user) {
+        if (userMap == null) {
+            userMap = new ConcurrentHashMap<String, Set<Document>>();
+        }
         if (!userMap.containsKey(user)) {
             return (userMap.put(user, new HashSet<Document>()) != null);
         }
@@ -33,6 +36,9 @@ public class UserMapSingleton {
     }
 
     public static synchronized boolean addDocument(String user, Document document) {
+        if (userMap == null) {
+            userMap = new ConcurrentHashMap<String, Set<Document>>();
+        }
         return userMap.get(user).add(document);
     }
 }
