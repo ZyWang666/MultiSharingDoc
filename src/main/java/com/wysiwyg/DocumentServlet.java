@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.lang.Integer;
 import java.util.List;
 
+import com.google.gson.Gson;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
@@ -42,8 +43,10 @@ public class DocumentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Document document = metadataManager.getDocument(req.getParameter(DOCUMENT_ID));
-        PrintWriter out = resp.getWriter();
-        document.documentRope.write(out);
+        Gson gson = new Gson();
+        byte[] ret = gson.toJson(document).getBytes();
+        ServletOutputStream out = resp.getOutputStream();
+        out.write(ret);
         out.flush();
         out.close();
    }

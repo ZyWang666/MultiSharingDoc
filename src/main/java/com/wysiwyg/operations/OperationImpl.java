@@ -15,7 +15,7 @@ public class OperationImpl implements Operation {
     @Override
     public boolean insert(Mutation mutation) {
         Document document = metadataManager.getDocument(mutation.documentId);
-        document.documentRope.insert(mutation.pos, new StringBuffer(mutation.payload));
+        document.documentRope = document.documentRope.insert(mutation.pos, new StringBuffer(mutation.payload));
         metadataManager.addDocument(document);
         return true;
     }

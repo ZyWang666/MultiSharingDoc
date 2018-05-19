@@ -27,9 +27,6 @@ public class DocumentMapSingleton {
         if (documentMap == null) {
             documentMap = new ConcurrentHashMap<String, Document>();
         }
-        if (!documentMap.containsKey(s)) {
-            return documentMap.put(s, d);
-        }
-        return null;
+        return documentMap.put(s, d);
     }
 }
