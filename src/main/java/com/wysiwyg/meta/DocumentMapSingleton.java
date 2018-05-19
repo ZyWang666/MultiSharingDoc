@@ -24,6 +24,9 @@ public class DocumentMapSingleton {
     }
 
     public static synchronized Document putDocumentMap(String s, Document d) {
-        return documentMap.put(s, d);
+        if (!documentMap.containsKey(s)) {
+            return documentMap.put(s, d);
+        }
+        return null;
     }
 }

@@ -13,6 +13,16 @@ public class MetadataManagerImpl implements MetadataManager {
     }
 
     @Override
+    public List<String> listUser() {
+        return new ArrayList<String>(UserMapSingleton.getUserMapInstance().keySet());
+    }
+
+    @Override
+    public boolean addUser(String user) {
+        return UserMapSingleton.addUser(user);
+    }
+
+    @Override
     public List<Document> listDocument() {
         return new ArrayList<Document>(DocumentMapSingleton.getDocumentMapInstance().values());
     }
@@ -25,5 +35,5 @@ public class MetadataManagerImpl implements MetadataManager {
     @Override
     public void addDocument(Document document) {
         DocumentMapSingleton.putDocumentMap(document.documentId, document);
-    }    
+    }
 }

@@ -1,8 +1,10 @@
 com/wysiwyg/operations/OperationImpl.class
+com/wysiwyg/meta/UserMapSingleton.class
 com/wysiwyg/MetadataServlet.class
 com/wysiwyg/DocumentServlet.class
 com/wysiwyg/ot/OperationalTransformation.class
 com/wysiwyg/meta/MetadataManager.class
+com/wysiwyg/UserServlet.class
 com/wysiwyg/structs/Opcode.class
 com/wysiwyg/structs/Document.class
 com/wysiwyg/meta/DocumentMapSingleton.class

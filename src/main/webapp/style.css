@@ -1,0 +1,17 @@
+body {
+    margin: auto;
+    margin-left: 25%;
+    margin-right: 25%;
+    font-size: 13px;
+    background: #fff;
+}
+
+#top {
+    height: 100px;
+    margin-left: 25%;
+    margin-right: 25%;
+}
+
+#text {
+    display: none;
+}
