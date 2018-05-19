@@ -24,6 +24,9 @@ public class DocumentMapSingleton {
     }
 
     public static synchronized Document putDocumentMap(String s, Document d) {
+        if (documentMap == null) {
+            documentMap = new ConcurrentHashMap<String, Document>();
+        }
         if (!documentMap.containsKey(s)) {
             return documentMap.put(s, d);
         }
