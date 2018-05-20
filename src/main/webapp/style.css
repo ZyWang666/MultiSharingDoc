@@ -15,3 +15,10 @@ body {
 #text {
     display: none;
 }
+
+#allFiles {
+  display: none;
+}
+#addfile {
+  display: none;
+}

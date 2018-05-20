@@ -12,13 +12,21 @@
 <body><div id="body">
     <div id="top">
         <div id="userList">
-            <h2>Users</h2>
+            <h2 id="theTitle">Users</h2>
             <div id="allUsers">
+            </div>
+            <div id="allFiles">
             </div>
             <div class="adduser">
                 <form id="adduser" action="#" method="post">
                     <input id="username" type="input" class="input"/>
                     <input class="button" type="submit" value="Add User"/>
+                </form>
+            </div>
+            <div class="addfile">
+                <form id="addfile" action="#" method="post">
+                    <input id="filename" type="input" class="input"/>
+                    <input class="button" type="submit" value="Add File"/>
                 </form>
             </div>
         </div>
