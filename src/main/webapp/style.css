@@ -14,12 +14,13 @@ body {
 
 #text {
     display: none;
-    margin-top: 15%;
+    margin-top: 25%;
 }
 
 #allFiles {
   display: none;
 }
+
 #addfile {
   display: none;
 }
