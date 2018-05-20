@@ -2,6 +2,7 @@ package com.wysiwyg;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import javax.servlet.ServletException;
@@ -31,7 +32,10 @@ public class MetadataServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        List<Document> documents = metadataManager.listDocument();
+        List<String> documents = new ArrayList<String>();
+        for (Document document: metadataManager.listDocument()) {
+            documents.add(document.documentId);
+        }
         Gson gson = new Gson();
         byte[] ret = gson.toJson(documents).getBytes();
         ServletOutputStream out = resp.getOutputStream();

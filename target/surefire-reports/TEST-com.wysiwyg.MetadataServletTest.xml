@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<<<<<<< HEAD
 <testsuite tests="2" failures="0" name="com.wysiwyg.MetadataServletTest" time="0.604" errors="0" skipped="0">
+=======
+<testsuite tests="2" failures="0" name="com.wysiwyg.MetadataServletTest" time="0.04" errors="0" skipped="0">
+>>>>>>> 71bb0f8237cea3b59d3e46579fa397d0dcb8c527
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre/lib"/>
@@ -45,8 +49,13 @@
     <property name="java.class.path" value="/usr/local/Cellar/maven/3.5.3/libexec/boot/plexus-classworlds-2.5.2.jar"/>
     <property name="java.vm.specification.version" value="1.8"/>
     <property name="sun.arch.data.model" value="64"/>
+<<<<<<< HEAD
     <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/jre"/>
     <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher install"/>
+=======
+    <property name="java.home" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/jre"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean install"/>
+>>>>>>> 71bb0f8237cea3b59d3e46579fa397d0dcb8c527
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="user.language" value="en"/>
     <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
@@ -64,6 +73,11 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
+<<<<<<< HEAD
   <testcase classname="com.wysiwyg.MetadataServletTest" name="getDocumentTest" time="0.601"/>
   <testcase classname="com.wysiwyg.MetadataServletTest" name="addDocumentTest" time="0.003"/>
+=======
+  <testcase classname="com.wysiwyg.MetadataServletTest" name="getDocumentTest" time="0.029"/>
+  <testcase classname="com.wysiwyg.MetadataServletTest" name="addDocumentTest" time="0.011"/>
+>>>>>>> 71bb0f8237cea3b59d3e46579fa397d0dcb8c527
 </testsuite>

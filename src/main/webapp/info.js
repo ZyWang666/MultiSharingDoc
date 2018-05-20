@@ -1,38 +1,42 @@
   (function() {
-    /*
-  _showUserFiles = function(data) {
-    var text;
-    ret = JSON.parse(data);
-    text = ret.Text;
-    if(ret.Err != "") {
-      return;
-    }
-    $("#text textarea").val(text);
-  };
+    _showFileContent = function(data) {
+      ret = JSON.parse(data);
+      $("#text").show();
+      text = ret.documentRope.sequence;
+      $("#text textarea").val(text);
+    };
 
-  showFile = function() {
-    fileName = $(this).text();
-    $.ajax({
-      url: "documents/",
-      type: "GET",
-      data: filename,
-      success: _showFile,
-      cache: false
-    })
-  };
-*/
+    showFileContent = function() {
+
+      fileName = $(this).text();
+      $.ajax({
+        url: "/documents/d?documentId="+fileName,
+        type: "GET",
+        success: _showFileContent,
+      });
+    };
+
+    updateFile = function(name) {
+      ul = $("#showFiles");
+      ul.append('<li><a href="#">' + name + '</a></li>');
+      $("#allFiles li").click(showFileContent);
+
+    };
+
     addFile = function() {
       var name;
       name = $("form#addfile input#filename").val();
       if(name === "") {
         return false;
       }
-      //$("form#adduser input#username").val("");
+      $("form#addfile input#username").val("");
       $.ajax({
         url: "/documents?name="+name,
         type: "POST",
         data: name,
+        success: updateFile(name),
       });
+      return false;
     };
 
     _showFiles = function(data) {
@@ -46,7 +50,7 @@
       files.empty();
 
       $("#addfile").show();
-
+      ul = $("<ul id=showFiles/>");
       var name, ret, ul, users, _i, _len, _ref;
       ret = JSON.parse(data);
       console.log(ret);
@@ -54,8 +58,8 @@
         files.append("No file.");
         return;
       }
-      ul = $("<ul/>");
 
+      _ref = ret;
       for(_i=0, _len=_ref.length; _i < _len; _i++) {
         console.log(_ref[_i]);
 
@@ -72,9 +76,14 @@
         type: "GET",
         success: _showFiles,
         cache: false
-      })
+      });
     };
 
+    updateUser = function(name) {
+      ul = $("#updateUsers");
+      ul.append('<li><a href="#">' + name + '</a></li>');
+      $("#allUsers li").click(showUserFiles);
+    }
     updateUsers = function(data) {
       var name, ret, ul, users, _i, _len, _ref;
       ret = JSON.parse(data);
@@ -85,7 +94,7 @@
         return;
       }
 
-      ul = $("<ul/>");
+      ul = $("<ul id=updateUsers/>");
       _ref = ret;
 
       for(_i=0, _len=_ref.length; _i < _len; _i++) {
@@ -103,20 +112,22 @@
         success: updateUsers,
         cache: false
       });
-    }();
+    };
 
     addUser = function() {
       var name;
       name = $("form#adduser input#username").val();
       if(name === "") {
-        return false;
+        returnfalse;
       }
-      //$("form#adduser input#username").val("");
+      $("form#adduser input#username").val("");
       $.ajax({
         url: "/users?user="+name,
         type: "POST",
         data: name,
+        success:updateUser(name)
       });
+      return false;
     };
 
 testShowFile = function(data) {
