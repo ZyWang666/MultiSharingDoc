@@ -14,15 +14,20 @@
         <div id="userList">
             <h2 id="theTitle">Users</h2>
             <div id="allUsers">
+              <ul id="updateUsers"/>
             </div>
-            <div id="allFiles">
-            </div>
+
             <div class="adduser">
                 <form id="adduser" action="#" method="post">
                     <input id="username" type="input" class="input"/>
                     <input class="button" type="submit" value="Add User"/>
                 </form>
             </div>
+
+            <div id="allFiles">
+              <ul id="updateFiles"/>
+            </div>
+
             <div class="addfile">
                 <form id="addfile" action="#" method="post">
                     <input id="filename" type="input" class="input"/>

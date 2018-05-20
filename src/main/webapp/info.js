@@ -17,19 +17,21 @@
     };
 
     updateFile = function(name) {
-      ul = $("#showFiles");
+      console.log("updateFile: " + name);
+      ul = $("#updateFiles");
+      ul.show();
       ul.append('<li><a href="#">' + name + '</a></li>');
       $("#allFiles li").click(showFileContent);
-
     };
 
     addFile = function() {
+      console.log("addFile");
       var name;
       name = $("form#addfile input#filename").val();
       if(name === "") {
         return false;
       }
-      $("form#addfile input#username").val("");
+      $("form#addfile input#filename").val("");
       $.ajax({
         url: "/documents?name="+name,
         type: "POST",
@@ -47,26 +49,20 @@
 
       files = $("#allFiles");
       files.show();
-      files.empty();
 
       $("#addfile").show();
-      ul = $("<ul id=showFiles/>");
+      ul = $("#updateFiles");
       var name, ret, ul, users, _i, _len, _ref;
       ret = JSON.parse(data);
-      console.log(ret);
       if(ret == null || ret.length == 0) {
-        files.append("No file.");
         return;
       }
 
       _ref = ret;
       for(_i=0, _len=_ref.length; _i < _len; _i++) {
-        console.log(_ref[_i]);
-
         name = _ref[_i];
         ul.append('<li><a href="#">' + name + '</a></li>');
       }
-      files.append(ul);
       $("#allFiles li").click(showFileContent);
     };
 
@@ -83,7 +79,8 @@
       ul = $("#updateUsers");
       ul.append('<li><a href="#">' + name + '</a></li>');
       $("#allUsers li").click(showUserFiles);
-    }
+    };
+
     updateUsers = function(data) {
       var name, ret, ul, users, _i, _len, _ref;
       ret = JSON.parse(data);
@@ -94,14 +91,13 @@
         return;
       }
 
-      ul = $("<ul id=updateUsers/>");
+      ul = $("#updateUsers");
       _ref = ret;
 
       for(_i=0, _len=_ref.length; _i < _len; _i++) {
         name = _ref[_i];
         ul.append('<li><a href="#">' + name + '</a></li>');
       }
-      users.append(ul);
       $("#allUsers li").click(showUserFiles);
     };
 
@@ -129,24 +125,6 @@
       });
       return false;
     };
-
-testShowFile = function(data) {
-  fileName = $(this).text();
-  data = "test data";
-  $("#text").show();
-  $("#text textarea").val(data);
-};
-
-testShowUserFiles = function() {
-  $("#adduser").hide();
-  userName = $(this).text();
-  users = $("#allUsers");
-  users.empty();
-  ul = $("<ul/>");
-  ul.append('<li><a href="#">' + userName + "File" + '</a></li>');
-  users.append(ul);
-  $("#allUsers li").click(testShowFile);
-};
 
     main = function() {
       $("form#adduser").submit(addUser);
