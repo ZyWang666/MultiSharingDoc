@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
 Test set: com.wysiwyg.MetadataServletTest
 -------------------------------------------------------------------------------
+<<<<<<< HEAD
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.051 sec
+=======
+<<<<<<< HEAD
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.671 sec
+=======
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.041 sec
+>>>>>>> 71bb0f8237cea3b59d3e46579fa397d0dcb8c527
+>>>>>>> 69d5bbc72384266b6a3b9b7f944ab3baf3656c62

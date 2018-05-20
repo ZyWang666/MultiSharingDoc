@@ -45,7 +45,7 @@ public class DocumentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Document document = metadataManager.getDocument(req.getParameter(DOCUMENT_ID));
-        long version = Long.valueOf(req.getParameter(DOCUMENT_ID)).longValue();
+        // long version = Long.valueOf(req.getParameter(DOCUMENT_ID)).longValue();
 
         // final AsyncContext asyncCtx = req.startAsync();
         // asyncCtx.start( new Runnable(){
