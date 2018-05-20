@@ -29,6 +29,7 @@ import com.wysiwyg.operations.OperationImpl;
     )
 public class DocumentServlet extends HttpServlet {
     private static final String DOCUMENT_ID         = "documentId";
+    private static final String VERSION             = "version";
     private static final String MODIFY_POSITION     = "pos";
     private static final String MODIFY_PAYLOAD      = "payload";
     private static final String OPCODE              = "op";
@@ -44,6 +45,25 @@ public class DocumentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Document document = metadataManager.getDocument(req.getParameter(DOCUMENT_ID));
+        long version = Long.valueOf(req.getParameter(DOCUMENT_ID)).longValue();
+
+        // final AsyncContext asyncCtx = req.startAsync();
+        // asyncCtx.start( new Runnable(){
+        //         public void run()
+        //         {
+        //             ServletResponse response = asyncCtx.getResponse();
+        //             try {
+        //                 response.getWriter().write( waitFor5To15Seconds() );
+        //             } catch (Exception e) {
+        //                 e.printStackTrace();
+        //             }
+        //             asyncCtx.complete();
+        //         }
+        //     });
+        // if (document.version <= version) {
+
+        // }
+
         Gson gson = new Gson();
         byte[] ret = gson.toJson(document).getBytes();
         ServletOutputStream out = resp.getOutputStream();

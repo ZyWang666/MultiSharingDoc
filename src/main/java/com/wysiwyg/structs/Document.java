@@ -7,6 +7,7 @@ import org.ahmadsoft.ropes.impl.FlatCharSequenceRope;
 
 public class Document {
     public String documentId;
+    public long version;
     public Rope documentRope;
 
     public Document(String documentId) {

@@ -5,7 +5,6 @@ public class Mutation {
     public String documentId;
     public int pos;
     public String payload;
-    public SyncInfo syncInfo;
 
     public Mutation(Opcode op, String id, int p, String c) {
         opcode = op;

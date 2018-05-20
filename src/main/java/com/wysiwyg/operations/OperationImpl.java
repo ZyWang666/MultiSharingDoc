@@ -16,12 +16,17 @@ public class OperationImpl implements Operation {
     public boolean insert(Mutation mutation) {
         Document document = metadataManager.getDocument(mutation.documentId);
         document.documentRope = document.documentRope.insert(mutation.pos, new StringBuffer(mutation.payload));
+        document.version += 1;
         metadataManager.addDocument(document);
         return true;
     }
 
     @Override
     public boolean delete(Mutation mutation) {
-        return false;
+        Document document = metadataManager.getDocument(mutation.documentId);
+        document.documentRope = document.documentRope.delete(mutation.pos, mutation.pos+mutation.payload.length());
+        document.version += 1;
+        metadataManager.addDocument(document);
+        return true;
     }
 }
