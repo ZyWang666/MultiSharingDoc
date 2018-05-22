@@ -9,6 +9,7 @@
     showFileContent = function() {
 
       fileName = $(this).text();
+      $("#theFileName").html(fileName);
       $.ajax({
         url: "/documents/d?documentId="+fileName,
         type: "GET",
@@ -25,7 +26,6 @@
     };
 
     addFile = function() {
-      console.log("addFile");
       var name;
       name = $("form#addfile input#filename").val();
       if(name === "") {
@@ -46,7 +46,6 @@
       $("#allUsers").hide();
 
       $("#userList h2").html("Files");
-
       files = $("#allFiles");
       files.show();
 
@@ -129,6 +128,31 @@
     main = function() {
       $("form#adduser").submit(addUser);
       $("form#addfile").submit(addFile);
+      $("#text textarea").keyup(function(){
+        pos= $('#text textarea').prop("selectionStart");
+        payload = String.fromCharCode(window.event.keyCode);
+        documentId = $("#theFileName").html();
+        console.log(documentId + " " + payload + " " + pos);
+        op = "ins";
+        if(payload == 8)
+        {
+          op = "del";
+        }
+
+        var data = {
+          documentId: documentId,
+          pos: pos,
+          payload: payload,
+          op: op,
+        };
+
+        $.ajax({
+          type: "POST",
+          url: "/documents/d",
+          contentType: "application/json", // NOT dataType!
+          data: JSON.stringify(data),
+        });
+      });
     };
 
     $(document).ready(main);

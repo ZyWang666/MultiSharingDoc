@@ -37,6 +37,7 @@
         </div>
     </div>
     <div id="text">
+      <h5 id="theFileName"></h3>
         <div id="compose">
                 <textarea class="input" name="post" rows="40" cols="100"></textarea>
 
