@@ -3,6 +3,8 @@
       ret = JSON.parse(data);
       $("#text").show();
       text = ret.documentRope.sequence;
+      ver = ret.documentRope.version;
+      $(storedver).html(ver);
       $("#text textarea").val(text);
     };
 
@@ -66,6 +68,8 @@
     };
 
     showUserFiles = function() {
+      uid = $(this).text();
+      $("#storeduid").html(uid);
       $.ajax({
         url: "/documents",
         type: "GET",
@@ -149,6 +153,8 @@
           pos: pos-1,
           payload: payload,
           op: op,
+          uid: $("#storeduid").html(),
+          ver: $("#storedver").html(),
         };
 
         $.ajax({
