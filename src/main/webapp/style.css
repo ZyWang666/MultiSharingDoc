@@ -24,7 +24,9 @@ body {
     display: none;
     margin-top: 25%;
 }
-
+#gotText {
+  display: none;
+}
 #allFiles {
   display: none;
 }

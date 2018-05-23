@@ -4,19 +4,19 @@
       $("#text").show();
       text = ret.document;
       ver = ret.ver;
-      $(storedver).html(ver);
+      $("#storedver").html(ver);
       $("#text textarea").val(text);
     };
 
     showFileContent = function() {
-
       fileName = $(this).text();
-      $("#theFileName").html(fileName);
       $.ajax({
         url: "/documents/d?documentId="+fileName,
         type: "GET",
         success: _showFileContent,
       });
+      $("#theFileName").html(fileName);
+      return false;
     };
 
     updateFile = function(name) {
@@ -129,7 +129,35 @@
       return false;
     };
 
+    _autoUpdate = function(data) {
+      ret = JSON.parse(data);
+      if(ret == null) {
+        return;
+      }
+
+      for(_i=0, _len=_ref.length; _i < _len; _i++) {
+        name = _ref[_i];
+        ul.append('<li><a href="#">' + name + '</a></li>');
+      }
+
+    }
+
+    autoUpdate = function() {
+      fileName = $("#theFileName").html();
+      ver = $("#storedver").html();
+      console.log("fileName: " + fileName + " ver: " + ver);
+      if(fileName != "")
+      {
+        $.ajax({
+          url: "/documents/op?documentId="+fileName + "&ver=" + ver,
+          type: "GET",
+          success:_autoUpdate
+        });
+      }
+    }
     main = function() {
+      setInterval(autoUpdate, 1000);
+
       $("form#adduser").submit(addUser);
       $("form#addfile").submit(addFile);
       $("#text textarea").keyup(function(){
@@ -159,7 +187,7 @@
 
         $.ajax({
           type: "POST",
-          url: "/documents/d",
+          url: "/documents/op",
           contentType: "application/json", // NOT dataType!
           data: JSON.stringify(data),
         });
