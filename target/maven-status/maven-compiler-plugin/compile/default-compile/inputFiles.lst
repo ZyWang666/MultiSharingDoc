@@ -3,6 +3,7 @@
 /Users/Frankie/CSE223B/cse223project/src/main/java/com/wysiwyg/ot/OperationalTransformation.java
 /Users/Frankie/CSE223B/cse223project/src/main/java/com/wysiwyg/operations/OperationImpl.java
 /Users/Frankie/CSE223B/cse223project/src/main/java/com/wysiwyg/structs/SyncInfo.java
+/Users/Frankie/CSE223B/cse223project/src/main/java/com/wysiwyg/structs/DocumentOutput.java
 /Users/Frankie/CSE223B/cse223project/src/main/java/com/wysiwyg/structs/Document.java
 /Users/Frankie/CSE223B/cse223project/src/main/java/com/wysiwyg/MetadataServlet.java
 /Users/Frankie/CSE223B/cse223project/src/main/java/com/wysiwyg/operations/Operation.java
