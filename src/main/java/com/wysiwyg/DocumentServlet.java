@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.wysiwyg.meta.MetadataManager;
 import com.wysiwyg.meta.MetadataManagerImpl;
 import com.wysiwyg.structs.Document;
+import com.wysiwyg.structs.DocumentOutput;
 import com.wysiwyg.structs.Mutation;
 import com.wysiwyg.structs.Opcode;
 import com.wysiwyg.ot.OperationalTransformation;
@@ -29,7 +30,7 @@ import com.wysiwyg.operations.OperationImpl;
     )
 public class DocumentServlet extends HttpServlet {
     private static final String DOCUMENT_ID         = "documentId";
-    private static final String VERSION             = "version";
+    private static final String VERSION             = "ver";
     private static final String MODIFY_POSITION     = "pos";
     private static final String MODIFY_PAYLOAD      = "payload";
     private static final String OPCODE              = "op";
@@ -47,8 +48,12 @@ public class DocumentServlet extends HttpServlet {
             throws ServletException, IOException {
         Document document = metadataManager.getDocument(req.getParameter(DOCUMENT_ID));
         // long version = Long.valueOf(req.getParameter(VERSION)).longValue();
+        DocumentOutput documentOutput = new DocumentOutput(document.documentId, 
+                                                        document.documentRope.toString(), 
+                                                        document.ver);
+
         Gson gson = new Gson();
-        byte[] ret = gson.toJson(document).getBytes();
+        byte[] ret = gson.toJson(documentOutput).getBytes();
         ServletOutputStream out = resp.getOutputStream();
         out.write(ret);
         out.flush();
@@ -71,7 +76,7 @@ public class DocumentServlet extends HttpServlet {
         } else {
             opcode = Opcode.IDENTITY;
         }
-        int version = Integer.valueOf(req.getParameter(VERSION)).intValue();
+        int version = Integer.valueOf(data.get(VERSION).getAsString()).intValue();
         String uid = req.getParameter(UID);
         Mutation mutation = new Mutation(opcode, document.documentId, pos, payload, uid, version);
         operationalTransformation.enqueueMutation(mutation);

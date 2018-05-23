@@ -2,8 +2,8 @@
     _showFileContent = function(data) {
       ret = JSON.parse(data);
       $("#text").show();
-      text = ret.documentRope.sequence;
-      ver = ret.documentRope.version;
+      text = ret.document;
+      ver = ret.ver;
       $(storedver).html(ver);
       $("#text textarea").val(text);
     };

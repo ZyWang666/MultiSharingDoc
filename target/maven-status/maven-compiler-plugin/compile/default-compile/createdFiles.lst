@@ -6,6 +6,7 @@ com/wysiwyg/ot/OperationalTransformation.class
 com/wysiwyg/meta/MetadataManager.class
 com/wysiwyg/UserServlet.class
 com/wysiwyg/structs/Opcode.class
+com/wysiwyg/structs/DocumentOutput.class
 com/wysiwyg/structs/Document.class
 com/wysiwyg/meta/DocumentMapSingleton.class
 com/wysiwyg/structs/Mutation.class
