@@ -15,7 +15,9 @@ public class OperationImpl implements Operation {
     @Override
     public boolean insert(Mutation mutation) {
         Document document = metadataManager.getDocument(mutation.documentId);
-        document.documentRope = document.documentRope.insert(mutation.pos, new StringBuffer(mutation.payload));
+        document.documentRope = document.documentRope.insert(
+                                Math.min(mutation.pos, document.documentRope.toString().length()), 
+                                new StringBuffer(mutation.payload));
         document.version += 1;
         metadataManager.addDocument(document);
         return true;
@@ -24,7 +26,9 @@ public class OperationImpl implements Operation {
     @Override
     public boolean delete(Mutation mutation) {
         Document document = metadataManager.getDocument(mutation.documentId);
-        document.documentRope = document.documentRope.delete(mutation.pos, mutation.pos+mutation.payload.length());
+        document.documentRope = document.documentRope.delete(
+                                Math.min(mutation.pos, document.documentRope.toString().length()),
+                                1);
         document.version += 1;
         metadataManager.addDocument(document);
         return true;

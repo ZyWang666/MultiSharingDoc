@@ -62,11 +62,18 @@ public class DocumentServlet extends HttpServlet {
         Document document = metadataManager.getDocument(data.get(DOCUMENT_ID).getAsString());
         int pos = Integer.valueOf(data.get(MODIFY_POSITION).getAsString()).intValue();
         String payload = data.get(MODIFY_PAYLOAD).getAsString();
-        Opcode op = data.get(OPCODE).getAsString().equals("ins") ? Opcode.INSERT : Opcode.DELETE;
-        // long version = Long.valueOf(req.getParameter(VERSION)).longValue();
-        // String uid = req.getParameter(UID);
-        Mutation mutation = new Mutation(op, document.documentId, pos, payload, null, 0);
+        String opcodeAsString = data.get(OPCODE).getAsString();
+        Opcode opcode = null;
+        if (opcodeAsString.equals("ins")) {
+            opcode = Opcode.INSERT;
+        } else if (opcodeAsString.equals("del")) {
+            opcode = Opcode.DELETE;
+        } else {
+            opcode = Opcode.IDENTITY;
+        }
+        int version = Integer.valueOf(req.getParameter(VERSION)).intValue();
+        String uid = req.getParameter(UID);
+        Mutation mutation = new Mutation(opcode, document.documentId, pos, payload, uid, version);
         operationalTransformation.enqueueMutation(mutation);
    }
-
 }
