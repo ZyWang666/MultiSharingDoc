@@ -6,27 +6,29 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import com.wysiwyg.meta.MetadataManager;
+import com.wysiwyg.meta.MetadataManagerImpl;
 import com.wysiwyg.structs.Mutation;
 import com.wysiwyg.operations.Operation;
 import com.wysiwyg.operations.OperationImpl;
 import com.wysiwyg.structs.Opcode;
 
 public class OperationalTransformation {
-    protected List<Mutation> mutationHistory;
+    protected MetadataManager metadataManager;
     protected AbstractQueue<Mutation> mutationQueue;
     protected Operation operationInstance;
 
     public OperationalTransformation(Operation operationInstance) {
-        mutationHistory = new ArrayList<Mutation>();
+        metadataManager = new MetadataManagerImpl();
         mutationQueue = new ConcurrentLinkedQueue<Mutation>();
         this.operationInstance = operationInstance;
         new Thread(new ConsumeMutationQueue()).start();
     }
 
     public synchronized boolean enqueueMutation(Mutation mutation) {
-        mutation.indexInMutationHistory = mutationHistory.size();
+        mutation.indexInMutationHistory = metadataManager.getMutationHistory(mutation.documentId).size();
+        metadataManager.addMutation(mutation.documentId, mutation);
         mutationQueue.add(mutation);
-        mutationHistory.add(mutation);
         return true;
     }
 
@@ -119,7 +121,7 @@ public class OperationalTransformation {
 
     protected Mutation transform(Mutation mutation) {
         for (int i = mutation.version; i < mutation.indexInMutationHistory; i++) {
-            mutation = t(mutation, mutationHistory.get(i));
+            mutation = t(mutation, metadataManager.getMutationHistory(mutation.documentId).get(i));
         }
         return mutation;
     }
