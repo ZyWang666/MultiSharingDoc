@@ -113,7 +113,7 @@
       var name;
       name = $("form#adduser input#username").val();
       if(name === "") {
-        returnfalse;
+        return false;
       }
       $("form#adduser input#username").val("");
       $.ajax({
@@ -130,18 +130,23 @@
       $("form#addfile").submit(addFile);
       $("#text textarea").keyup(function(){
         pos= $('#text textarea').prop("selectionStart");
-        payload = String.fromCharCode(window.event.keyCode);
+        payload = window.event.key;
         documentId = $("#theFileName").html();
         console.log(documentId + " " + payload + " " + pos);
         op = "ins";
-        if(payload == 8)
+        if(payload == "Backspace")
         {
+          payload = "";
           op = "del";
         }
+        else if(payload.length != 1)
+          return;
+
+        //except keys like 'shift', 'escape'...
 
         var data = {
           documentId: documentId,
-          pos: pos,
+          pos: pos-1,
           payload: payload,
           op: op,
         };
