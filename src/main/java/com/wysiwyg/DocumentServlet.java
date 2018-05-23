@@ -33,6 +33,7 @@ public class DocumentServlet extends HttpServlet {
     private static final String MODIFY_POSITION     = "pos";
     private static final String MODIFY_PAYLOAD      = "payload";
     private static final String OPCODE              = "op";
+    private static final String UID                 = "uid";
 
     protected MetadataManager metadataManager;
     protected OperationalTransformation operationalTransformation;
@@ -45,25 +46,7 @@ public class DocumentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Document document = metadataManager.getDocument(req.getParameter(DOCUMENT_ID));
-        // long version = Long.valueOf(req.getParameter(DOCUMENT_ID)).longValue();
-
-        // final AsyncContext asyncCtx = req.startAsync();
-        // asyncCtx.start( new Runnable(){
-        //         public void run()
-        //         {
-        //             ServletResponse response = asyncCtx.getResponse();
-        //             try {
-        //                 response.getWriter().write( waitFor5To15Seconds() );
-        //             } catch (Exception e) {
-        //                 e.printStackTrace();
-        //             }
-        //             asyncCtx.complete();
-        //         }
-        //     });
-        // if (document.version <= version) {
-
-        // }
-
+        // long version = Long.valueOf(req.getParameter(VERSION)).longValue();
         Gson gson = new Gson();
         byte[] ret = gson.toJson(document).getBytes();
         ServletOutputStream out = resp.getOutputStream();
@@ -80,7 +63,9 @@ public class DocumentServlet extends HttpServlet {
         int pos = Integer.valueOf(data.get(MODIFY_POSITION).getAsString()).intValue();
         String payload = data.get(MODIFY_PAYLOAD).getAsString();
         Opcode op = data.get(OPCODE).getAsString().equals("ins") ? Opcode.INSERT : Opcode.DELETE;
-        Mutation mutation = new Mutation(op, document.documentId, pos, payload);
+        // long version = Long.valueOf(req.getParameter(VERSION)).longValue();
+        // String uid = req.getParameter(UID);
+        Mutation mutation = new Mutation(op, document.documentId, pos, payload, null, 0);
         operationalTransformation.enqueueMutation(mutation);
    }
 
