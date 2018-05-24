@@ -149,7 +149,8 @@
       console.log("ver: " + ver);
 */
       $("#storedver").html(ver);
-      end = txtarea.selectionEnd;
+      console.log("new ver: " + ver);
+      end = $("#text textarea").selectionEnd;
       if(uid == $("#storeduid").html())
       {
         continue;
@@ -178,7 +179,7 @@
       {
         continue;
       }
-      txtarea.selectionEnd = end;
+      $("#text textarea").selectionEnd = end;
     }
   }
 
@@ -214,7 +215,7 @@
         return;
 
       //except keys like 'shift', 'escape'...
-
+      console.log("send ver: " + $("#storedver").html());
       var data = {
         documentId: documentId,
         pos: pos-1,
