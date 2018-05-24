@@ -10,7 +10,9 @@
 /Users/XXXXXX/2018Spring/CSE223B/project/CSE223B-Project/src/main/java/com/wysiwyg/DocumentServlet.java
 /Users/XXXXXX/2018Spring/CSE223B/project/CSE223B-Project/src/main/java/com/wysiwyg/meta/UserMapSingleton.java
 /Users/XXXXXX/2018Spring/CSE223B/project/CSE223B-Project/src/main/java/com/wysiwyg/operations/OperationImpl.java
+/Users/XXXXXX/2018Spring/CSE223B/project/CSE223B-Project/src/main/java/com/wysiwyg/OperationServlet.java
 /Users/XXXXXX/2018Spring/CSE223B/project/CSE223B-Project/src/main/java/com/wysiwyg/structs/Opcode.java
 /Users/XXXXXX/2018Spring/CSE223B/project/CSE223B-Project/src/main/java/com/wysiwyg/meta/DocumentMapSingleton.java
+/Users/XXXXXX/2018Spring/CSE223B/project/CSE223B-Project/src/main/java/com/wysiwyg/meta/MutationMapSingleton.java
 /Users/XXXXXX/2018Spring/CSE223B/project/CSE223B-Project/src/main/java/com/wysiwyg/MetadataServlet.java
 /Users/XXXXXX/2018Spring/CSE223B/project/CSE223B-Project/src/main/java/com/wysiwyg/structs/DocumentOutput.java

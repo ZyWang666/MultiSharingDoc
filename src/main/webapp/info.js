@@ -135,17 +135,25 @@
         return;
       }
 
-      for(_i=0, _len=_ref.length; _i < _len; _i++) {
-        name = _ref[_i];
-        ul.append('<li><a href="#">' + name + '</a></li>');
+      for(i = 0; i < ret.length; i++)
+      {
+        if(ret[i].opcode == "INSERT")
+        {
+                console.log("1");  
+        }
+        else if(ret[i].opcode == "DELETE") {
+                  console.log("2");
+        }
+        else {
+          console.log("3");
+        }
       }
-
     }
 
     autoUpdate = function() {
       fileName = $("#theFileName").html();
       ver = $("#storedver").html();
-      console.log("fileName: " + fileName + " ver: " + ver);
+      //console.log("fileName: " + fileName + " ver: " + ver);
       if(fileName != "")
       {
         $.ajax({

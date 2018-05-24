@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.wysiwyg.structs.Document;
+import com.wysiwyg.structs.Mutation;
 
 public class MetadataManagerImpl implements MetadataManager {
 
@@ -35,5 +36,15 @@ public class MetadataManagerImpl implements MetadataManager {
     @Override
     public void addDocument(Document document) {
         DocumentMapSingleton.putDocumentMap(document.documentId, document);
+    }
+
+    @Override
+    public List<Mutation> addMutation(String documentId, Mutation mutation) {
+        return MutationMapSingleton.addMutation(documentId, mutation);
+    }
+
+    @Override
+    public List<Mutation> getMutationHistory(String documentId) {
+        return MutationMapSingleton.getMutationHistory(documentId);
     }
 }
