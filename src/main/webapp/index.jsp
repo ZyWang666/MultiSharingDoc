@@ -13,6 +13,7 @@
     <div id="top">
         <h3 id="storeduid"></h3>
         <h3 id="storedver"></h3>
+        <h3 id="gotText"></h3>
         <div id="userList">
             <h2 id="theTitle">Users</h2>
             <div id="allUsers">
