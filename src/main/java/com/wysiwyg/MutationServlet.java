@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.wysiwyg.meta.MetadataManager;
 import com.wysiwyg.meta.MetadataManagerImpl;
 import com.wysiwyg.structs.Document;
-import com.wysiwyg.structs.DocumentOutput;
 import com.wysiwyg.structs.Mutation;
 import com.wysiwyg.structs.Opcode;
 import com.wysiwyg.ot.OperationalTransformation;
@@ -26,10 +25,10 @@ import com.wysiwyg.operations.Operation;
 import com.wysiwyg.operations.OperationImpl;
 
 @WebServlet(
-        name = "OperationServlet",
+        name = "MutationServlet",
         urlPatterns = {"/documents/op"}
     )
-public class OperationServlet extends HttpServlet {
+public class MutationServlet extends HttpServlet {
     private static final String DOCUMENT_ID         = "documentId";
     private static final String VERSION             = "ver";
     private static final String MODIFY_POSITION     = "pos";
@@ -40,7 +39,7 @@ public class OperationServlet extends HttpServlet {
     protected MetadataManager metadataManager;
     protected OperationalTransformation operationalTransformation;
     
-    public OperationServlet() {
+    public MutationServlet() {
         metadataManager = new MetadataManagerImpl();
         operationalTransformation = new OperationalTransformation(new OperationImpl());
     }
@@ -48,9 +47,10 @@ public class OperationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        Document document = metadataManager.getDocument(req.getParameter(DOCUMENT_ID));
         List<Mutation> mutationHistory = metadataManager.getMutationHistory(req.getParameter(DOCUMENT_ID));
         List<Mutation> mutationDiff = new ArrayList<Mutation>();
-        for (int i = Integer.valueOf(req.getParameter(VERSION)).intValue(); i < mutationHistory.size(); i++) {
+        for (int i = Integer.valueOf(req.getParameter(VERSION)).intValue(); i < document.ver; i++) {
             mutationDiff.add(mutationHistory.get(i));
         }
 
