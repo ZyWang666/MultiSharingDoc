@@ -4,7 +4,8 @@
     $("#text").show();
     text = ret.document;
     ver = ret.ver;
-    $("#storedver").html(ver);
+    //$("#storedver").html(ver);
+    localStorage.setItem("version", ver);
     $("#text textarea").val(text);
   };
 
@@ -69,7 +70,8 @@
 
   showUserFiles = function() {
     uid = $(this).text();
-    $("#storeduid").html(uid);
+    //$("#storeduid").html(uid);
+    localStorage.setItem("uid", uid);
     $.ajax({
       url: "/documents",
       type: "GET",
@@ -148,10 +150,10 @@
       console.log("uid: " + uid);
       console.log("ver: " + ver);
 */
-      $("#storedver").html(ver);
-      console.log("new ver: " + ver);
+      //$("#storedver").html(ver);
+      localStorage.setItem("version", ver);
       end = $("#text textarea").selectionEnd;
-      if(uid == $("#storeduid").html())
+      if(uid == localStorage.getItem("uid"))
       {
         continue;
       }
@@ -184,8 +186,11 @@
   }
 
   autoUpdate = function() {
+    console.log("name: " + localStorage.getItem("lastname"));
     fileName = $("#theFileName").html();
-    ver = $("#storedver").html();
+    //ver = $("#storedver").html();
+    ver = localStorage.getItem("version");
+    console.log("send ver: " + ver);
     if(fileName != "")
     {
       $.ajax({
@@ -196,7 +201,8 @@
     }
   }
   main = function() {
-    setInterval(autoUpdate, 100);
+    localStorage.setItem("lastname", "Smith");
+    setInterval(autoUpdate, 1000);
 
     $("form#adduser").submit(addUser);
     $("form#addfile").submit(addFile);
@@ -215,14 +221,13 @@
         return;
 
       //except keys like 'shift', 'escape'...
-      console.log("send ver: " + $("#storedver").html());
       var data = {
         documentId: documentId,
         pos: pos-1,
         payload: payload,
         op: op,
-        uid: $("#storeduid").html(),
-        ver: $("#storedver").html(),
+        uid: localStorage.getItem("uid"),
+        ver: localStorage.getItem("version"),
       };
 
       $.ajax({

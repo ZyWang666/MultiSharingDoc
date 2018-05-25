@@ -6,14 +6,6 @@ body {
     background: #fff;
 }
 
-#storeduid {
-  display: none;
-}
-
-#storedver {
-  display: none;
-}
-
 #top {
     height: 100px;
     margin-left: 25%;
