@@ -15,12 +15,12 @@ public class Mutation {
         opcode = op;
     }
 
-    public Mutation(Opcode op, String id, int p, String c, String uid, int v) {
+    public Mutation(Opcode op, String id, int p, String c, String uuid, int v) {
         opcode = op;
         documentId = id;
         pos = p;
         payload = c;
-        this.uid = uid;
+        uid = uuid;
         version = v;
     }
 }

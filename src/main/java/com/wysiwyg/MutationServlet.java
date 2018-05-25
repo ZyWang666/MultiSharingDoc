@@ -51,7 +51,13 @@ public class MutationServlet extends HttpServlet {
         List<Mutation> mutationHistory = metadataManager.getMutationHistory(req.getParameter(DOCUMENT_ID));
         List<Mutation> mutationDiff = new ArrayList<Mutation>();
         for (int i = Integer.valueOf(req.getParameter(VERSION)).intValue(); i < document.ver; i++) {
-            mutationDiff.add(mutationHistory.get(i));
+            // since indexInMutationHistory describes the 0-based index at the historyQueue
+            // so it is alwasy one smaller than the version returned to the client. 
+            // for example, indexInMutationHistory = 0, then version returned to client should be 1
+            // because next time client request will be version 1, which naturally fits in position 1 in historyQueue.
+            Mutation mutation = mutationHistory.get(i);
+            mutation.version = mutation.indexInMutationHistory+1;
+            mutationDiff.add(mutation);
         }
 
         Gson gson = new Gson();
@@ -79,7 +85,7 @@ public class MutationServlet extends HttpServlet {
             opcode = Opcode.IDENTITY;
         }
         int version = Integer.valueOf(data.get(VERSION).getAsString()).intValue();
-        String uid = req.getParameter(UID);
+        String uid = data.get(UID).getAsString();
         Mutation mutation = new Mutation(opcode, document.documentId, pos, payload, uid, version);
         operationalTransformation.enqueueMutation(mutation);
    }

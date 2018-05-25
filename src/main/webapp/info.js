@@ -21,7 +21,6 @@
   };
 
   updateFile = function(name) {
-    console.log("updateFile: " + name);
     ul = $("#updateFiles");
     ul.show();
     ul.append('<li><a href="#">' + name + '</a></li>');
@@ -132,12 +131,14 @@
   };
 
   _autoUpdate = function(data) {
+    console.log("_autoUpdate");
     ret = JSON.parse(data);
     if(ret == null) {
       return;
     }
 
     for(i = 0; i < ret.length; i++) {
+      console.log("length: " + i);
       op = ret[i].opcode;
       pos = ret[i].pos;
       payload = ret[i].payload;
@@ -153,9 +154,37 @@
       //$("#storedver").html(ver);
       localStorage.setItem("version", ver);
       end = $("#text textarea").selectionEnd;
+
       if(uid == localStorage.getItem("uid"))
       {
-        continue;
+        obj = JSON.parse(localStorage.getItem("bufferedOps"));
+        if(obj.operations.length == 0)
+          localStorage.setItem("ACK","T");
+        else
+        {
+          //this is the operation variable
+          operation = obj.operations[0];
+
+          //this is the local copy of data
+          txt = $("#text textarea").val();
+
+          //this is the current verion of the local copy
+          version = localStorage.getItem("version");
+
+          //TODO: transform operation
+
+          //send transformed operation to server
+          $.ajax({
+            type: "POST",
+            url: "/documents/op",
+            contentType: "application/json", // NOT dataType!
+            data: operation,
+          });
+
+
+          //remove current operation from bufferOps
+          obj.operations.splice(0, 1);
+        }
       }
 
       else if(op == "DELETE")
@@ -186,11 +215,9 @@
   }
 
   autoUpdate = function() {
-    console.log("name: " + localStorage.getItem("lastname"));
     fileName = $("#theFileName").html();
     //ver = $("#storedver").html();
     ver = localStorage.getItem("version");
-    console.log("send ver: " + ver);
     if(fileName != "")
     {
       $.ajax({
@@ -201,8 +228,10 @@
     }
   }
   main = function() {
-    localStorage.setItem("lastname", "Smith");
-    setInterval(autoUpdate, 1000);
+    setInterval(autoUpdate, 3000);
+
+    localStorage.setItem("ACK", "T");
+    localStorage.setItem("bufferedOps", '{"operations":[]}');
 
     $("form#adduser").submit(addUser);
     $("form#addfile").submit(addFile);
@@ -210,7 +239,6 @@
       pos= $('#text textarea').prop("selectionStart");
       payload = window.event.key;
       documentId = $("#theFileName").html();
-      console.log(documentId + " " + payload + " " + (pos-1));
       op = "ins";
       if(payload == "Backspace")
       {
@@ -220,7 +248,6 @@
       else if(payload.length != 1)
         return;
 
-      //except keys like 'shift', 'escape'...
       var data = {
         documentId: documentId,
         pos: pos-1,
@@ -230,12 +257,23 @@
         ver: localStorage.getItem("version"),
       };
 
-      $.ajax({
-        type: "POST",
-        url: "/documents/op",
-        contentType: "application/json", // NOT dataType!
-        data: JSON.stringify(data),
-      });
+      if(localStorage.getItem("ACK") === "T")
+      {
+        localStorage.setItem("ACK", "F");
+        $.ajax({
+          type: "POST",
+          url: "/documents/op",
+          contentType: "application/json", // NOT dataType!
+          data: JSON.stringify(data),
+        });
+      }
+      else {
+        {
+          obj = JSON.parse(localStorage.getItem("bufferedOps"));
+          obj['operations'].push(JSON.stringify(data));
+          localStorage.setItem("bufferedOps", JSON.stringify(obj));
+        }
+      }
     });
   };
 
