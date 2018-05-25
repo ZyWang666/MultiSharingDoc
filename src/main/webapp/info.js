@@ -184,6 +184,7 @@
 
           //remove current operation from bufferOps
           obj.operations.splice(0, 1);
+          localStorage.setItem("bufferedOps", JSON.stringify(obj));
         }
       }
 
