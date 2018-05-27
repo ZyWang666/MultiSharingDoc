@@ -12,5 +12,11 @@ public class Mutation {
         documentId = id;
         pos = p;
         payload = c;
+        syncInfo = new SyncInfo();
+    }
+
+    // construct setOrder message 
+    public Mutation(int uid, LinkedList<Integer> order) {
+        syncInfo = new SyncInfo(uid, order);
     }
 }
