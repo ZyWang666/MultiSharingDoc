@@ -68,6 +68,12 @@
       <version>2.6.2</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.inferred</groupId>
+      <artifactId>freebuilder</artifactId>
+      <version>1.14.6</version>
+    </dependency>
+
     <!-- <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>

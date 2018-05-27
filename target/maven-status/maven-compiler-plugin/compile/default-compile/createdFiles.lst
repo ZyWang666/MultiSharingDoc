@@ -3,11 +3,14 @@ com/wysiwyg/meta/UserMapSingleton.class
 com/wysiwyg/MetadataServlet.class
 com/wysiwyg/DocumentServlet.class
 com/wysiwyg/ot/OperationalTransformation.class
+com/wysiwyg/MutationServlet.class
 com/wysiwyg/meta/MetadataManager.class
 com/wysiwyg/UserServlet.class
 com/wysiwyg/structs/Opcode.class
+com/wysiwyg/structs/DocumentOutput.class
 com/wysiwyg/structs/Document.class
 com/wysiwyg/meta/DocumentMapSingleton.class
+com/wysiwyg/meta/MutationMapSingleton.class
 com/wysiwyg/structs/Mutation.class
 com/wysiwyg/Main.class
 com/wysiwyg/operations/Operation.class

@@ -16,7 +16,7 @@ public class SyncInfo {
 
     SyncInfo() {
       timeVector = new TimeVector(0);
-      uidOrder = new LinkedList<Integer>;
+      uidOrder = new LinkedList<Integer>();
       setOrderInd = false;
     }
 

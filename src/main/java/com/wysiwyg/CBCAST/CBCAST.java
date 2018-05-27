@@ -1,9 +1,9 @@
-package CBCAST;
+package com.wysiwyg.CBCAST;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.wysiwyg.structs;
+import com.wysiwyg.structs.*;
 
 
 public class CBCAST {
@@ -34,7 +34,7 @@ public class CBCAST {
     // TODO: Broadcasting to all addresses, need to distinguish between message type.
   }
 
-  private synchronized boolean delayMessage(Mutation msg) {
+  protected synchronized boolean delayMessage(Mutation msg) {
     int si = msg.syncInfo.srcIndex;
 
     // should this be > ?, older version: != VT[si]+1
@@ -77,7 +77,7 @@ public class CBCAST {
         if (!delayMessage(msgWait)) {
           _waitList.remove(msgWait);  // this needs to be before, otherwise, forever loop?
                                       // actually won't, because has to have one entry equal to VT[si]+1.
-          onReceive(msgWait, order, recOrder);  // recursion to find eligible delivery with updated time vector.
+          onReceive(msgWait, order, recOrder, output);  // recursion to find eligible delivery with updated time vector.
         }
       }
 

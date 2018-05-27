@@ -26,7 +26,7 @@ public class TimeVector {
     }
   }
 
-  public update(TimeVector vt) {
+  public void update(TimeVector vt) {
     if (this.peerCount == 0) {
       VT = new int[vt.peerCount];
       this.peerCount = vt.peerCount;
@@ -42,11 +42,13 @@ public class TimeVector {
     }
   }
 
-  public merge(TimeVector u, TimeVector v) {
+  public void merge(TimeVector u, TimeVector v) {
+    int i;
+
     // assume peerCount is already max. of |u| and |v|
     int min = (u.peerCount <= v.peerCount)? u.peerCount : v.peerCount;
 
-    for (int i=0; i<min; i++) {
+    for (i=0; i<min; i++) {
       VT[i] = (u.VT[i] < v.VT[i])? v.VT[i] : u.VT[i];
     }
 

@@ -11,6 +11,7 @@
 
 <body><div id="body">
     <div id="top">
+        <h3 id="gotText"></h3>
         <div id="userList">
             <h2 id="theTitle">Users</h2>
             <div id="allUsers">
@@ -23,7 +24,6 @@
                     <input class="button" type="submit" value="Add User"/>
                 </form>
             </div>
-
             <div id="allFiles">
               <ul id="updateFiles"/>
             </div>
@@ -37,7 +37,7 @@
         </div>
     </div>
     <div id="text">
-      <h5 id="theFileName"></h3>
+      <h5 id="theFileName"></h5>
         <div id="compose">
                 <textarea class="input" name="post" rows="40" cols="100"></textarea>
 

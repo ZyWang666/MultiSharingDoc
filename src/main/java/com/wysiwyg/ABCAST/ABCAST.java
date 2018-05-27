@@ -1,17 +1,14 @@
-package ABCAST;
+package com.wysiwyg.ABCAST;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.wysiwyg.structs;
-import com.wysiwyg.CBCAST;
+import com.wysiwyg.structs.*;
+import com.wysiwyg.CBCAST.CBCAST;
 
-
-public class Constants {
-  public static final int UID_NODE = 100000;
-}
 
 public class ABCAST extends CBCAST {
+  public static final int UID_NODE = 100000;
   public boolean hasToken;                    // node with token to set total order?
   public int uid;                             // unique id
   
@@ -38,7 +35,7 @@ public class ABCAST extends CBCAST {
     msg.syncInfo.setOrderInd = false;
 //    msg.syncInfo.deliverable = hasToken;
 
-    this.CBCAST.bcast(msg);
+    super.bcast(msg);
 
     // send setOrder
     if (hasToken) {
@@ -47,7 +44,7 @@ public class ABCAST extends CBCAST {
       txUID.add(uid);
       uid++;
       Mutation orderMsg = new Mutation(uid, txUID);
-      this.CBCAST.bcast(orderMsg);    // broadcast setOrder message
+      super.bcast(orderMsg);    // broadcast setOrder message
     }
   }
 
@@ -66,22 +63,22 @@ public class ABCAST extends CBCAST {
 */
       // message must be received from non-token peers.
       if (delayMessage(msg)) {
-        this.CBCAST.onReceive(msg, null, false, null);
+        super.onReceive(msg, null, false, null);
       } else {
         _uidOrder = new LinkedList<Integer>();   
-        this.CBCAST.onReceive(msg, _uidOrder, true, null);
+        super.onReceive(msg, _uidOrder, true, null);
 
         // send setOrder message
         uid++;
         Mutation orderMsg = new Mutation(uid, _uidOrder);
-        this.CBCAST.bcast(orderMsg);    // broadcast setOrder message
+        super.bcast(orderMsg);    // broadcast setOrder message
       }
 
       return;
     }
 
     // for non-token nodes
-    if (this.CBCAST.onReceive(msg, null, false, _abcastWaitList) == false) {
+    if (super.onReceive(msg, null, false, _abcastWaitList) == false) {
       for (Mutation order_msg : _abcastWaitList) {
         // find all the setOrder message delivered
         if (order_msg.syncInfo.setOrderInd == true) {
