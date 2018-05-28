@@ -5,7 +5,7 @@
     text = ret.document;
     ver = ret.ver;
     //$("#storedver").html(ver);
-    localStorage.setItem("version", ver);
+    sessionStorage.setItem("version", ver);
     $("#text textarea").val(text);
   };
 
@@ -70,7 +70,7 @@
   showUserFiles = function() {
     uid = $(this).text();
     //$("#storeduid").html(uid);
-    localStorage.setItem("uid", uid);
+    sessionStorage.setItem("uid", uid);
     $.ajax({
       url: "/documents",
       type: "GET",
@@ -131,7 +131,7 @@
   };
 
   _autoUpdate = function(data) {
-    console.log("_autoUpdate");
+    console.log("uid: " + sessionStorage.getItem("uid"));
     ret = JSON.parse(data);
     if(ret == null) {
       return;
@@ -152,14 +152,14 @@
       console.log("ver: " + ver);
 */
       //$("#storedver").html(ver);
-      localStorage.setItem("version", ver);
+      sessionStorage.setItem("version", ver);
       end = $("#text textarea").selectionEnd;
 
-      if(uid == localStorage.getItem("uid"))
+      if(uid == sessionStorage.getItem("uid"))
       {
-        obj = JSON.parse(localStorage.getItem("bufferedOps"));
+        obj = JSON.parse(sessionStorage.getItem("bufferedOps"));
         if(obj.operations.length == 0)
-          localStorage.setItem("ACK","T");
+          sessionStorage.setItem("ACK","T");
         else
         {
           //this is the operation variable
@@ -169,7 +169,7 @@
           txt = $("#text textarea").val();
 
           //this is the current verion of the local copy
-          version = localStorage.getItem("version");
+          version = sessionStorage.getItem("version");
 
           //TODO: transform operation
 
@@ -184,7 +184,7 @@
 
           //remove current operation from bufferOps
           obj.operations.splice(0, 1);
-          localStorage.setItem("bufferedOps", JSON.stringify(obj));
+          sessionStorage.setItem("bufferedOps", JSON.stringify(obj));
         }
       }
 
@@ -218,7 +218,7 @@
   autoUpdate = function() {
     fileName = $("#theFileName").html();
     //ver = $("#storedver").html();
-    ver = localStorage.getItem("version");
+    ver = sessionStorage.getItem("version");
     if(fileName != "")
     {
       $.ajax({
@@ -231,8 +231,8 @@
   main = function() {
     setInterval(autoUpdate, 3000);
 
-    localStorage.setItem("ACK", "T");
-    localStorage.setItem("bufferedOps", '{"operations":[]}');
+    sessionStorage.setItem("ACK", "T");
+    sessionStorage.setItem("bufferedOps", '{"operations":[]}');
 
     $("form#adduser").submit(addUser);
     $("form#addfile").submit(addFile);
@@ -254,13 +254,13 @@
         pos: pos-1,
         payload: payload,
         op: op,
-        uid: localStorage.getItem("uid"),
-        ver: localStorage.getItem("version"),
+        uid: sessionStorage.getItem("uid"),
+        ver: sessionStorage.getItem("version"),
       };
 
-      if(localStorage.getItem("ACK") === "T")
+      if(sessionStorage.getItem("ACK") === "T")
       {
-        localStorage.setItem("ACK", "F");
+        sessionStorage.setItem("ACK", "F");
         $.ajax({
           type: "POST",
           url: "/documents/op",
@@ -270,9 +270,9 @@
       }
       else {
         {
-          obj = JSON.parse(localStorage.getItem("bufferedOps"));
+          obj = JSON.parse(sessionStorage.getItem("bufferedOps"));
           obj['operations'].push(JSON.stringify(data));
-          localStorage.setItem("bufferedOps", JSON.stringify(obj));
+          sessionStorage.setItem("bufferedOps", JSON.stringify(obj));
         }
       }
     });
