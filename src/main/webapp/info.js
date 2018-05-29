@@ -4,7 +4,6 @@
     $("#text").show();
     text = ret.document;
     ver = ret.ver;
-    //$("#storedver").html(ver);
     localStorage.setItem("version", ver);
     $("#text textarea").val(text);
   };
@@ -69,7 +68,6 @@
 
   showUserFiles = function() {
     uid = $(this).text();
-    //$("#storeduid").html(uid);
     localStorage.setItem("uid", uid);
     $.ajax({
       url: "/documents",
@@ -144,22 +142,22 @@
       payload = ret[i].payload;
       uid = ret[i].uid;
       ver = ret[i].version;
-/*
-      console.log("op: " + op);
-      console.log("pos: " + pos);
-      console.log("payload: " + payload);
-      console.log("uid: " + uid);
-      console.log("ver: " + ver);
-*/
-      //$("#storedver").html(ver);
+
       localStorage.setItem("version", ver);
       end = $("#text textarea").selectionEnd;
 
-      if(uid == localStorage.getItem("uid"))
+
+      console.log(op)
+      console.log(uid)
+      console.log(localStorage.getItem("uid"))
+
+      if(uid === localStorage.getItem("uid"))
       {
         obj = JSON.parse(localStorage.getItem("bufferedOps"));
-        if(obj.operations.length == 0)
+        if(obj.operations.length == 0) 
+        {
           localStorage.setItem("ACK","T");
+        }
         else
         {
           //this is the operation variable
@@ -188,7 +186,7 @@
         }
       }
 
-      else if(op == "DELETE")
+      else if(op === "DELETE")
       {
 
         newText = $("#text textarea").val().substring(0,pos+1)+
@@ -199,15 +197,16 @@
 
 
       }
-      else if(op == "INSERT")
+      else if(op === "INSERT")
       {
+        console.log("INSERT!!!")
         newText = $("#text textarea").val().substring(0,pos)+ payload +
                     $("#text textarea").val().substring(pos,
                     $("#text textarea").val().length);
 
         $("#text textarea").val(newText);
       }
-      else if(op == "IDENTITY")
+      else if(op === "IDENTITY")
       {
         continue;
       }
@@ -224,7 +223,7 @@
       $.ajax({
         url: "/documents/op?documentId="+fileName + "&ver=" + ver,
         type: "GET",
-        success:_autoUpdate
+        success: _autoUpdate
       });
     }
   }
@@ -240,11 +239,11 @@
       pos= $('#text textarea').prop("selectionStart");
       payload = window.event.key;
       documentId = $("#theFileName").html();
-      op = "ins";
+      op = "INSERT";
       if(payload == "Backspace")
       {
         payload = "";
-        op = "del";
+        op = "DELETE";
       }
       else if(payload.length != 1)
         return;
@@ -253,9 +252,9 @@
         documentId: documentId,
         pos: pos-1,
         payload: payload,
-        op: op,
+        opcode: op,
         uid: localStorage.getItem("uid"),
-        ver: localStorage.getItem("version"),
+        version: localStorage.getItem("version"),
       };
 
       if(localStorage.getItem("ACK") === "T")

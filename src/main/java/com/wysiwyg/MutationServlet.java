@@ -29,12 +29,14 @@ import com.wysiwyg.operations.OperationImpl;
         urlPatterns = {"/documents/op"}
     )
 public class MutationServlet extends HttpServlet {
+    private static final String OPCODE              = "opcode";
     private static final String DOCUMENT_ID         = "documentId";
-    private static final String VERSION             = "ver";
     private static final String MODIFY_POSITION     = "pos";
     private static final String MODIFY_PAYLOAD      = "payload";
-    private static final String OPCODE              = "op";
     private static final String UID                 = "uid";
+    private static final String VERSION             = "version";
+    private static final String MUTATION_DELETE     = "DELETE";
+    private static final String MUTATION_INSERT     = "INSERT";
 
     protected MetadataManager metadataManager;
     protected OperationalTransformation operationalTransformation;
@@ -77,9 +79,9 @@ public class MutationServlet extends HttpServlet {
         String payload = data.get(MODIFY_PAYLOAD).getAsString();
         String opcodeAsString = data.get(OPCODE).getAsString();
         Opcode opcode = null;
-        if (opcodeAsString.equals("ins")) {
+        if (opcodeAsString.equals("INSERT")) {
             opcode = Opcode.INSERT;
-        } else if (opcodeAsString.equals("del")) {
+        } else if (opcodeAsString.equals("DELETE")) {
             opcode = Opcode.DELETE;
         } else {
             opcode = Opcode.IDENTITY;
