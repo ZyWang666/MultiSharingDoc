@@ -16,7 +16,7 @@ public class OperationImpl implements Operation {
     public boolean insert(Mutation mutation) {
         Document document = metadataManager.getDocument(mutation.documentId);
         int pos = Math.min(mutation.pos, document.documentRope.toString().length());
-        pos = Math.max(0, mutation.pos);
+        pos = Math.max(0, pos);
         document.documentRope = document.documentRope.insert(pos, new StringBuffer(mutation.payload));
         document.ver += 1;
         metadataManager.addDocument(document);
@@ -27,7 +27,7 @@ public class OperationImpl implements Operation {
     public boolean delete(Mutation mutation) {
         Document document = metadataManager.getDocument(mutation.documentId);
         int pos = Math.min(mutation.pos, document.documentRope.toString().length());
-        pos = Math.max(0, mutation.pos);
+        pos = Math.max(0, pos);
         document.documentRope = document.documentRope.delete(pos, pos+1);
         System.out.printf("delete, pos is %d, length is %d, content is: %s\n", 
             mutation.pos, document.documentRope.toString().length(), document.documentRope.toString());

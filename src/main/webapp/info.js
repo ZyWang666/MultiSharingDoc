@@ -360,7 +360,7 @@ function transformMultiple(ps, q) {
                 outstandingOp_t = transformL[0];
                 operation_t = transformL[1];
 
-                transformLL = transformMultiple(bufferedOps, ret[i]);
+                transformLL = transformMultiple(bufferedOps, operation_t);
                 bufferedOps = transformLL[0];
                 operation_tt = transformLL[1];
 
