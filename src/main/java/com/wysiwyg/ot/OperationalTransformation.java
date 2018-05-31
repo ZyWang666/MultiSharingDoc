@@ -27,6 +27,8 @@ public class OperationalTransformation {
 
     public synchronized boolean enqueueMutation(Mutation mutation) {
         mutation.indexInMutationHistory = metadataManager.getMutationHistory(mutation.documentId).size();
+        // System.out.println("enqueue: " + mutation.indexInMutationHistory);
+        mutation = transform(mutation);
         metadataManager.addMutation(mutation.documentId, mutation);
         mutationQueue.add(mutation);
         return true;
@@ -37,7 +39,7 @@ public class OperationalTransformation {
             while (true) {
                 if (!mutationQueue.isEmpty()) {
                     Mutation mutation = mutationQueue.poll();
-                    mutation = transform(mutation);
+                    // mutation = transform(mutation);
                     if (mutation.opcode.equals(Opcode.INSERT)) {
                         operationInstance.insert(mutation);
                     } else if (mutation.opcode.equals(Opcode.DELETE)) {
@@ -61,7 +63,8 @@ public class OperationalTransformation {
                                 p.pos+1,
                                 p.payload,
                                 p.uid, 
-                                p.version);
+                                p.version,
+                                p.indexInMutationHistory);
         }
     }
 
@@ -74,7 +77,8 @@ public class OperationalTransformation {
                                 p.pos-1,
                                 p.payload,
                                 p.uid,
-                                p.version);
+                                p.version,
+                                p.indexInMutationHistory);
         }
     }
 
@@ -87,7 +91,8 @@ public class OperationalTransformation {
                                 p.pos+1,
                                 p.payload,
                                 p.uid,
-                                p.version);
+                                p.version,
+                                p.indexInMutationHistory);
         }
     }
 
@@ -100,7 +105,8 @@ public class OperationalTransformation {
                                 p.pos-1,
                                 p.payload,
                                 p.uid,
-                                p.version);
+                                p.version,
+                                p.indexInMutationHistory);
         } else {
             return Mutation.IDENTITY;
         }
@@ -120,8 +126,9 @@ public class OperationalTransformation {
     }
 
     protected Mutation transform(Mutation mutation) {
+        List<Mutation> mutationHistory = metadataManager.getMutationHistory(mutation.documentId);
         for (int i = mutation.version; i < mutation.indexInMutationHistory; i++) {
-            mutation = t(mutation, metadataManager.getMutationHistory(mutation.documentId).get(i));
+            mutation = t(mutation, mutationHistory.get(i));
         }
         return mutation;
     }

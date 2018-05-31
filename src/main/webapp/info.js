@@ -1,283 +1,482 @@
+function tii(p, q) {
+    if (parseInt(p.pos) < parseInt(q.pos)) {
+        return [
+            {
+                "opcode": p.opcode,
+                "documentId": p.documentId,
+                "pos": parseInt(p.pos),
+                "payload": p.payload,
+                "uid": p.uid,
+            },
+            {
+                "opcode": q.opcode,
+                "documentId": q.documentId,
+                "pos": parseInt(q.pos)+1,
+                "payload": q.payload,
+                "uid": q.uid,
+            }
+        ]
+    } else {
+        return [
+            {
+                "opcode": p.opcode,
+                "documentId": p.documentId,
+                "pos": parseInt(p.pos)+1,
+                "payload": p.payload,
+                "uid": p.uid,
+            }, 
+            {
+                "opcode": q.opcode,
+                "documentId": q.documentId,
+                "pos": parseInt(q.pos),
+                "payload": q.payload,
+                "uid": q.uid,
+            }
+        ]
+    }
+}
+
+function tid(p, q) {
+    if (parseInt(p.pos) <= parseInt(q.pos)) {
+        return [
+            {
+                "opcode": p.opcode,
+                "documentId": p.documentId,
+                "pos": parseInt(p.pos),
+                "payload": p.payload,
+                "uid": p.uid,
+            },
+            {
+                "opcode": q.opcode,
+                "documentId": q.documentId,
+                "pos": parseInt(q.pos)+1,
+                "payload": q.payload,
+                "uid": q.uid,
+            }
+        ]
+    } else {
+        return[
+            {
+                "opcode": p.opcode,
+                "documentId": p.documentId,
+                "pos": parseInt(p.pos)-1,
+                "payload": p.payload,
+                "uid": p.uid,
+            },
+            {
+                "opcode": q.opcode,
+                "documentId": q.documentId,
+                "pos": parseInt(q.pos),
+                "payload": q.payload,
+                "uid": q.uid,
+            }
+        ] 
+    }
+}
+
+function tdi(p, q) {
+    if (parseInt(p.pos) < parseInt(q.pos)) {
+        return [
+            {
+                "opcode": p.opcode,
+                "documentId": p.documentId,
+                "pos": parseInt(p.pos),
+                "payload": p.payload,
+                "uid": p.uid,
+            },
+            {
+                "opcode": q.opcode,
+                "documentId": q.documentId,
+                "pos": parseInt(q.pos)-1,
+                "payload": q.payload,
+                "uid": q.uid,
+            }
+        ]
+    } else {
+        return [
+            {
+                "opcode": p.opcode,
+                "documentId": p.documentId,
+                "pos": parseInt(p.pos)+1,
+                "payload": p.payload,
+                "uid": p.uid,
+            },
+            {
+                "opcode": q.opcode,
+                "documentId": q.documentId,
+                "pos": parseInt(q.pos),
+                "payload": q.payload,
+                "uid": q.uid,
+            }
+        ]
+    }
+}
+
+function tdd(p, q) {
+    if (parseInt(p.pos) < parseInt(q.pos)) {
+        return [
+            {
+                "opcode": p.opcode,
+                "documentId": p.documentId,
+                "pos": parseInt(p.pos),
+                "payload": p.payload,
+                "uid": p.uid,
+            },
+            {
+                "opcode": q.opcode,
+                "documentId": q.documentId,
+                "pos": parseInt(q.pos)-1,
+                "payload": q.payload,
+                "uid": q.uid,
+            }
+        ]
+    } else if (parseInt(p.pos) > parseInt(q.pos)) {
+        return [
+            {
+                "opcode": p.opcode,
+                "documentId": p.documentId,
+                "pos": parseInt(p.pos)-1,
+                "payload": p.payload,
+                "uid": p.uid,
+            },
+            {
+                "opcode": q.opcode,
+                "documentId": q.documentId,
+                "pos": parseInt(q.pos),
+                "payload": q.payload,
+                "uid": q.uid,
+            }
+        ]
+    } else {
+        return [
+            {
+                "opcode": "IDENTITY",
+            },
+            {
+                "opcode": "IDENTITY",
+            }
+        ]
+    }
+}
+
+function transform(p, q) {
+    console.log(p);
+    console.log(q);
+    if (p == null || q == null) {
+        return [p,q];
+    }
+    if (p.opcode == "INSERT" && q.opcode == "INSERT") {
+        return tii(p, q);
+    } else if (p.opcode == "INSERT" && q.opcode == "DELETE") {
+        return tid(p, q);
+    } else if (p.opcode == "DELETE" && q.opcode == "INSERT") {
+        return tdi(p, q);
+    } else if (p.opcode == "DELETE" && q.opcode == "DELETE") {
+        return tdd(p, q);
+    }
+    console.log("dafuk")
+    return [p,q];
+};
+
+function transformMultiple(ps, q) {
+    var ret = [];
+    if (q == null || ps.length == 0) {
+        return [ret, q];
+    }
+    
+    for (i = 0; i < ps.length; i+=1) {
+        console.log(ps[i]);
+        console.log(q);
+        transformL = transform(ps[i], q);
+        ret.push(transformL[0]);
+        console.log(transformL[0]);
+        q = transformL[1];
+        console.log(q)
+    }
+    console.log(ret)
+    return [ret, q];
+};
+
 (function() {
-  _showFileContent = function(data) {
-    ret = JSON.parse(data);
-    $("#text").show();
-    text = ret.document;
-    ver = ret.ver;
-    localStorage.setItem("version", ver);
-    $("#text textarea").val(text);
-  };
+    _showFileContent = function(data) {
+        ret = JSON.parse(data);
+        $("#text").show();
+        text = ret.document;
+        ver = ret.ver;
+        sessionStorage.setItem("version", ver);
+        $("#text textarea").val(text);
+    };
 
-  showFileContent = function() {
-    fileName = $(this).text();
-    $.ajax({
-      url: "/documents/d?documentId="+fileName,
-      type: "GET",
-      success: _showFileContent,
-    });
-    $("#theFileName").html(fileName);
-    return false;
-  };
-
-  updateFile = function(name) {
-    ul = $("#updateFiles");
-    ul.show();
-    ul.append('<li><a href="#">' + name + '</a></li>');
-    $("#allFiles li").click(showFileContent);
-  };
-
-  addFile = function() {
-    var name;
-    name = $("form#addfile input#filename").val();
-    if(name === "") {
-      return false;
-    }
-    $("form#addfile input#filename").val("");
-    $.ajax({
-      url: "/documents?name="+name,
-      type: "POST",
-      data: name,
-      success: updateFile(name),
-    });
-    return false;
-  };
-
-  _showFiles = function(data) {
-    $("#adduser").hide();
-    $("#allUsers").hide();
-
-    $("#userList h2").html("Files");
-    files = $("#allFiles");
-    files.show();
-
-    $("#addfile").show();
-    ul = $("#updateFiles");
-    var name, ret, ul, users, _i, _len, _ref;
-    ret = JSON.parse(data);
-    if(ret == null || ret.length == 0) {
-      return;
-    }
-
-    _ref = ret;
-    for(_i=0, _len=_ref.length; _i < _len; _i++) {
-      name = _ref[_i];
-      ul.append('<li><a href="#">' + name + '</a></li>');
-    }
-    $("#allFiles li").click(showFileContent);
-  };
-
-  showUserFiles = function() {
-    uid = $(this).text();
-    localStorage.setItem("uid", uid);
-    $.ajax({
-      url: "/documents",
-      type: "GET",
-      success: _showFiles,
-      cache: false
-    });
-  };
-
-  updateUser = function(name) {
-    ul = $("#updateUsers");
-    ul.append('<li><a href="#">' + name + '</a></li>');
-    $("#allUsers li").click(showUserFiles);
-  };
-
-  updateUsers = function(data) {
-    var name, ret, ul, users, _i, _len, _ref;
-    ret = JSON.parse(data);
-    users = $("#allUsers");
-
-    if(ret == null) {
-      users.append("No user.");
-      return;
-    }
-
-    ul = $("#updateUsers");
-    _ref = ret;
-
-    for(_i=0, _len=_ref.length; _i < _len; _i++) {
-      name = _ref[_i];
-      ul.append('<li><a href="#">' + name + '</a></li>');
-    }
-    $("#allUsers li").click(showUserFiles);
-  };
-
-  listUsers = function() {
-    $.ajax({
-      url: "/users",
-      type: "GET",
-      success: updateUsers,
-      cache: false
-    });
-  };
-
-  addUser = function() {
-    var name;
-    name = $("form#adduser input#username").val();
-    if(name === "") {
-      return false;
-    }
-    $("form#adduser input#username").val("");
-    $.ajax({
-      url: "/users?user="+name,
-      type: "POST",
-      data: name,
-      success:updateUser(name)
-    });
-    return false;
-  };
-
-  _autoUpdate = function(data) {
-    console.log("_autoUpdate");
-    ret = JSON.parse(data);
-    if(ret == null) {
-      return;
-    }
-
-    for(i = 0; i < ret.length; i++) {
-      console.log("length: " + i);
-      op = ret[i].opcode;
-      pos = ret[i].pos;
-      payload = ret[i].payload;
-      uid = ret[i].uid;
-      ver = ret[i].version;
-
-      localStorage.setItem("version", ver);
-      end = $("#text textarea").selectionEnd;
-
-
-      console.log(op)
-      console.log(uid)
-      console.log(localStorage.getItem("uid"))
-
-      if(uid === localStorage.getItem("uid"))
-      {
-        obj = JSON.parse(localStorage.getItem("bufferedOps"));
-        if(obj.operations.length == 0) 
-        {
-          localStorage.setItem("ACK","T");
-        }
-        else
-        {
-          //this is the operation variable
-          operation = obj.operations[0];
-
-          //this is the local copy of data
-          txt = $("#text textarea").val();
-
-          //this is the current verion of the local copy
-          version = localStorage.getItem("version");
-
-          //TODO: transform operation
-
-          //send transformed operation to server
-          $.ajax({
-            type: "POST",
-            url: "/documents/op",
-            contentType: "application/json", // NOT dataType!
-            data: operation,
-          });
-
-
-          //remove current operation from bufferOps
-          obj.operations.splice(0, 1);
-          localStorage.setItem("bufferedOps", JSON.stringify(obj));
-        }
-      }
-
-      else if(op === "DELETE")
-      {
-
-        newText = $("#text textarea").val().substring(0,pos+1)+
-                    $("#text textarea").val().substring(pos+2,
-                    $("#text textarea").val().length);
-
-        $("#text textarea").val(newText);
-
-
-      }
-      else if(op === "INSERT")
-      {
-        console.log("INSERT!!!")
-        newText = $("#text textarea").val().substring(0,pos)+ payload +
-                    $("#text textarea").val().substring(pos,
-                    $("#text textarea").val().length);
-
-        $("#text textarea").val(newText);
-      }
-      else if(op === "IDENTITY")
-      {
-        continue;
-      }
-      $("#text textarea").selectionEnd = end;
-    }
-  }
-
-  autoUpdate = function() {
-    fileName = $("#theFileName").html();
-    //ver = $("#storedver").html();
-    ver = localStorage.getItem("version");
-    if(fileName != "")
-    {
-      $.ajax({
-        url: "/documents/op?documentId="+fileName + "&ver=" + ver,
-        type: "GET",
-        success: _autoUpdate
-      });
-    }
-  }
-  main = function() {
-    setInterval(autoUpdate, 3000);
-
-    localStorage.setItem("ACK", "T");
-    localStorage.setItem("bufferedOps", '{"operations":[]}');
-
-    $("form#adduser").submit(addUser);
-    $("form#addfile").submit(addFile);
-    $("#text textarea").keyup(function(){
-      pos= $('#text textarea').prop("selectionStart");
-      payload = window.event.key;
-      documentId = $("#theFileName").html();
-      op = "INSERT";
-      if(payload == "Backspace")
-      {
-        payload = "";
-        op = "DELETE";
-      }
-      else if(payload.length != 1)
-        return;
-
-      var data = {
-        documentId: documentId,
-        pos: pos-1,
-        payload: payload,
-        opcode: op,
-        uid: localStorage.getItem("uid"),
-        version: localStorage.getItem("version"),
-      };
-
-      if(localStorage.getItem("ACK") === "T")
-      {
-        localStorage.setItem("ACK", "F");
+    showFileContent = function() {
+        fileName = $(this).text();
         $.ajax({
-          type: "POST",
-          url: "/documents/op",
-          contentType: "application/json", // NOT dataType!
-          data: JSON.stringify(data),
+            url: "/documents/d?documentId="+fileName,
+            type: "GET",
+            success: _showFileContent,
         });
-      }
-      else {
-        {
-          obj = JSON.parse(localStorage.getItem("bufferedOps"));
-          obj['operations'].push(JSON.stringify(data));
-          localStorage.setItem("bufferedOps", JSON.stringify(obj));
-        }
-      }
-    });
-  };
+        $("#theFileName").html(fileName);
+        return false;
+    };
 
-  $(document).ready(main);
-  $(document).ready(listUsers);
+    updateFile = function(name) {
+        ul = $("#updateFiles");
+        ul.show();
+        ul.append('<li><a href="#">' + name + '</a></li>');
+        $("#allFiles li").click(showFileContent);
+    };
+
+    addFile = function() {
+        var name;
+        name = $("form#addfile input#filename").val();
+        if(name === "") {
+            return false;
+        }
+        $("form#addfile input#filename").val("");
+        $.ajax({
+            url: "/documents?name="+name,
+            type: "POST",
+            data: name,
+            success: updateFile(name),
+        });
+        return false;
+    };
+
+    _showFiles = function(data) {
+        $("#adduser").hide();
+        $("#allUsers").hide();
+
+        $("#userList h2").html("Files");
+        files = $("#allFiles");
+        files.show();
+
+        $("#addfile").show();
+        ul = $("#updateFiles");
+        var name, ret, ul, users, _i, _len, _ref;
+        ret = JSON.parse(data);
+        if(ret == null || ret.length == 0) {
+            return;
+        }
+
+        _ref = ret;
+        for(_i=0, _len=_ref.length; _i < _len; _i++) {
+            name = _ref[_i];
+            ul.append('<li><a href="#">' + name + '</a></li>');
+        }
+        $("#allFiles li").click(showFileContent);
+    };
+
+    showUserFiles = function() {
+        uid = $(this).text();
+        sessionStorage.setItem("uid", uid);
+        $.ajax({
+            url: "/documents",
+            type: "GET",
+            success: _showFiles,
+            cache: false
+        });
+    };
+
+    updateUser = function(name) {
+        ul = $("#updateUsers");
+        ul.append('<li><a href="#">' + name + '</a></li>');
+        $("#allUsers li").click(showUserFiles);
+    };
+
+    updateUsers = function(data) {
+        var name, ret, ul, users, _i, _len, _ref;
+        ret = JSON.parse(data);
+        users = $("#allUsers");
+
+        if(ret == null) {
+            users.append("No user.");
+            return;
+        }
+
+        ul = $("#updateUsers");
+        _ref = ret;
+
+        for(_i=0, _len=_ref.length; _i < _len; _i++) {
+            name = _ref[_i];
+            ul.append('<li><a href="#">' + name + '</a></li>');
+        }
+        $("#allUsers li").click(showUserFiles);
+    };
+
+    listUsers = function() {
+        $.ajax({
+            url: "/users",
+            type: "GET",
+            success: updateUsers,
+            cache: false
+        });
+    };
+
+    addUser = function() {
+        var name;
+        name = $("form#adduser input#username").val();
+        if(name === "") {
+            return false;
+        }
+        $("form#adduser input#username").val("");
+        $.ajax({
+            url: "/users?user="+name,
+            type: "POST",
+            data: name,
+            success:updateUser(name)
+        });
+        return false;
+    };
+
+    _autoUpdate = function(data) {
+        receiveAck = false
+        ret = JSON.parse(data);
+        if(ret == null) {
+            return;
+        }
+
+        for(i = 0; i < ret.length; i++) {
+            op = ret[i].opcode;
+            pos = ret[i].pos;
+            payload = ret[i].payload;
+            uid = ret[i].uid;
+            ver = ret[i].version;
+
+            version = sessionStorage.getItem("version");
+            sessionStorage.setItem("version", (parseInt(version)+1).toString());
+            console.log("set version to " + sessionStorage.getItem("version"))
+            // sessionStorage.setItem("version", ver);
+            end = $("#text textarea").selectionEnd;
+
+            // receive server ACK, must have one or more pending request 
+            // (but only one outstanding request)
+            if(uid == sessionStorage.getItem("uid")) {
+                receiveAck = true
+            } else {
+                // transform incoming operation against current outstanding and buffer operations
+                outstandingOp = JSON.parse(sessionStorage.getItem("outstandingOp"));
+                bufferedOps = JSON.parse(sessionStorage.getItem("bufferedOps"));
+
+                transformL = transform(outstandingOp, ret[i]);
+                outstandingOp_t = transformL[0];
+                operation_t = transformL[1];
+
+                transformLL = transformMultiple(bufferedOps, ret[i]);
+                bufferedOps = transformLL[0];
+                operation_tt = transformLL[1];
+
+                sessionStorage.setItem("outstandingOp", JSON.stringify(outstandingOp_t));
+                sessionStorage.setItem("bufferedOps", JSON.stringify(bufferedOps));
+
+                if (operation_tt.opcode == "DELETE") {
+                    newText = $("#text textarea").val().substring(0,operation_tt.pos+1) +
+                            $("#text textarea").val().substring(operation_tt.pos+2,
+                            $("#text textarea").val().length);
+                    $("#text textarea").val(newText);
+                } else if (operation_tt.opcode == "INSERT") {
+                    newText = $("#text textarea").val().substring(0,operation_tt.pos) + operation_tt.payload +
+                            $("#text textarea").val().substring(operation_tt.pos,
+                            $("#text textarea").val().length);
+
+                    $("#text textarea").val(newText);
+                } else if (operation_tt.opcode == "IDENTITY") {
+                    continue;
+                }
+            }
+            $("#text textarea").selectionEnd = end;
+        }
+
+        if (receiveAck) {
+            bufferedOps = JSON.parse(sessionStorage.getItem("bufferedOps"));
+            // console.log(bufferedOps);
+            // if there is only one pending request, then transition back to synchronized state. 
+            if(bufferedOps.length == 0) {
+                sessionStorage.setItem("ACK","T");
+                sessionStorage.setItem("outstandingOp", JSON.stringify(null));
+                sessionStorage.setItem("bufferedOps", JSON.stringify([]));
+            // if there are more than one pending requests, then stay in current state. 
+            } else {
+                // this is the operation variable
+                operation = bufferedOps[0];
+                operation.version = parseInt(sessionStorage.getItem("version")).toString();
+                console.log(operation);
+                // store the current outstanding operation
+                sessionStorage.setItem("outstandingOp", JSON.stringify(operation));
+
+                //send transformed operation to server
+                $.ajax({
+                    type: "POST",
+                    url: "/documents/op",
+                    contentType: "application/json", // NOT dataType!
+                    data: JSON.stringify(operation),
+                });
+
+                //remove current operation from bufferOps
+                bufferedOps.splice(0, 1);
+                sessionStorage.setItem("bufferedOps", JSON.stringify(bufferedOps));
+            }
+        }
+    }
+
+    autoUpdate = function() {
+        fileName = $("#theFileName").html();
+        ver = sessionStorage.getItem("version");
+        if(fileName != "") {
+            $.ajax({
+                url: "/documents/op?documentId=" + fileName + "&version=" + ver,
+                type: "GET",
+                success: _autoUpdate
+            });
+        }
+    }
+
+    main = function() {
+        setInterval(autoUpdate, 1000);
+
+        sessionStorage.setItem("ACK", "T");
+        sessionStorage.setItem("outstandingOp", JSON.stringify(null));
+        sessionStorage.setItem("bufferedOps", JSON.stringify([]));
+
+        $("form#adduser").submit(addUser);
+        $("form#addfile").submit(addFile);
+        $("#text textarea").keyup(function() {
+            pos = $('#text textarea').prop("selectionStart");
+            payload = window.event.key;
+            documentId = $("#theFileName").html();
+            op = "INSERT";
+            if (payload == "Backspace") {
+                payload = "";
+                op = "DELETE";
+            } else if (payload.length != 1) {
+                return;
+            }
+
+            var data = {
+                documentId: documentId,
+                pos: pos-1,
+                payload: payload,
+                opcode: op,
+                uid: sessionStorage.getItem("uid"),
+                version: sessionStorage.getItem("version"),
+            };
+
+            if (sessionStorage.getItem("ACK") === "T") {
+                sessionStorage.setItem("ACK", "F");
+                sessionStorage.setItem("outstandingOp", JSON.stringify(data))
+                $.ajax({
+                    type: "POST",
+                    url: "/documents/op",
+                    contentType: "application/json", // NOT dataType!
+                    data: JSON.stringify(data),
+                });
+            } else {
+                bufferedOps = JSON.parse(sessionStorage.getItem("bufferedOps"));
+                bufferedOps.push(data);
+                sessionStorage.setItem("bufferedOps", JSON.stringify(bufferedOps));
+            }
+        });
+    };
+
+    $(document).ready(main);
+    $(document).ready(listUsers);
 
 }).call(this);

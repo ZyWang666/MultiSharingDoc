@@ -52,13 +52,18 @@ public class MutationServlet extends HttpServlet {
         Document document = metadataManager.getDocument(req.getParameter(DOCUMENT_ID));
         List<Mutation> mutationHistory = metadataManager.getMutationHistory(req.getParameter(DOCUMENT_ID));
         List<Mutation> mutationDiff = new ArrayList<Mutation>();
-        for (int i = Integer.valueOf(req.getParameter(VERSION)).intValue(); i < document.ver; i++) {
+        for (int i = Integer.valueOf(req.getParameter(VERSION)).intValue(); 
+                i < Math.min(document.ver, Integer.valueOf(req.getParameter(VERSION)).intValue()+1); 
+                i++) {
             // since indexInMutationHistory describes the 0-based index at the historyQueue
             // so it is alwasy one smaller than the version returned to the client. 
             // for example, indexInMutationHistory = 0, then version returned to client should be 1
             // because next time client request will be version 1, which naturally fits in position 1 in historyQueue.
             Mutation mutation = mutationHistory.get(i);
             mutation.version = mutation.indexInMutationHistory+1;
+            // System.out.println("fetching indexInHistory: " + mutation.indexInMutationHistory);
+            // System.out.println("fetching version: " + mutation.version);
+            // System.out.println("document version: " + document.ver);
             mutationDiff.add(mutation);
         }
 
