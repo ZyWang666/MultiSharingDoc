@@ -23,11 +23,12 @@ init = function() {
       type: "GET",
       error: _init
   });
-  if(succ)
-    return;
-  console.log("here");
 }();
 
 concurWrite = function() {
-
+  for(i = 0; i < 10; i++)
+  {
+    //TODO not working properly
+    //webPost(true, 0, "testFile", "user"+i, 0, i);
+  }
 }();

@@ -207,8 +207,9 @@ function transformMultiple(ps, q) {
         $("#text textarea").val(text);
     };
 
-    showFileContent = function() {
-        fileName = $(this).text();
+    showFileContent = function(test, fileName) {
+        if(test != true)
+          fileName = $(this).text();
         sessionStorage.setItem("fileName", fileName);
         $.ajax({
             url: "/documents/d?documentId="+fileName,
@@ -428,6 +429,52 @@ function transformMultiple(ps, q) {
             });
         }
     }
+    webPost = function(test, pos, documentId, uid, version, payload) {
+        pos = $('#text textarea').prop("selectionStart");
+        if(test != true)
+        {
+          pos = $('#text textarea').prop("selectionStart");
+          documentId = sessionStorage.getItem("fileName");
+          uid = sessionStorage.getItem("uid");
+          version = sessionStorage.getItem("version");
+          payload = window.event.key;
+        }
+        else
+        {
+          console.log("test");
+        }
+        op = "INSERT";
+        if (payload == "Backspace") {
+            payload = "";
+            op = "DELETE";
+        } else if (payload.length != 1) {
+            return;
+        }
+
+        var data = {
+            documentId: documentId,
+            pos: pos-1,
+            payload: payload,
+            opcode: op,
+            uid: uid,
+            version: version,
+        };
+
+        if (sessionStorage.getItem("ACK") === "T") {
+            sessionStorage.setItem("ACK", "F");
+            sessionStorage.setItem("outstandingOp", JSON.stringify(data))
+            $.ajax({
+                type: "POST",
+                url: "/documents/op",
+                contentType: "application/json", // NOT dataType!
+                data: JSON.stringify(data),
+            });
+        } else {
+            bufferedOps = JSON.parse(sessionStorage.getItem("bufferedOps"));
+            bufferedOps.push(data);
+            sessionStorage.setItem("bufferedOps", JSON.stringify(bufferedOps));
+        }
+    };
 
     main = function() {
         setInterval(autoUpdate, 1000);
@@ -438,42 +485,7 @@ function transformMultiple(ps, q) {
 
         $("form#adduser").submit(addUser);
         $("form#addfile").submit(addFile);
-        $("#text textarea").keyup(function() {
-            pos = $('#text textarea').prop("selectionStart");
-            payload = window.event.key;
-            documentId = sessionStorage.getItem("fileName");
-            op = "INSERT";
-            if (payload == "Backspace") {
-                payload = "";
-                op = "DELETE";
-            } else if (payload.length != 1) {
-                return;
-            }
-
-            var data = {
-                documentId: documentId,
-                pos: pos-1,
-                payload: payload,
-                opcode: op,
-                uid: sessionStorage.getItem("uid"),
-                version: sessionStorage.getItem("version"),
-            };
-
-            if (sessionStorage.getItem("ACK") === "T") {
-                sessionStorage.setItem("ACK", "F");
-                sessionStorage.setItem("outstandingOp", JSON.stringify(data))
-                $.ajax({
-                    type: "POST",
-                    url: "/documents/op",
-                    contentType: "application/json", // NOT dataType!
-                    data: JSON.stringify(data),
-                });
-            } else {
-                bufferedOps = JSON.parse(sessionStorage.getItem("bufferedOps"));
-                bufferedOps.push(data);
-                sessionStorage.setItem("bufferedOps", JSON.stringify(bufferedOps));
-            }
-        });
+        $("#text textarea").keyup(webPost);
     };
 
     $(document).ready(main);
