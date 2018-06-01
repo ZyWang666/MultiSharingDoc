@@ -24,7 +24,7 @@ function tii(p, q) {
                 "pos": parseInt(p.pos)+1,
                 "payload": p.payload,
                 "uid": p.uid,
-            }, 
+            },
             {
                 "opcode": q.opcode,
                 "documentId": q.documentId,
@@ -70,7 +70,7 @@ function tid(p, q) {
                 "payload": q.payload,
                 "uid": q.uid,
             }
-        ] 
+        ]
     }
 }
 
@@ -183,7 +183,7 @@ function transformMultiple(ps, q) {
     if (q == null || ps.length == 0) {
         return [ret, q];
     }
-    
+
     for (i = 0; i < ps.length; i+=1) {
         console.log(ps[i]);
         console.log(q);
@@ -209,6 +209,7 @@ function transformMultiple(ps, q) {
 
     showFileContent = function() {
         fileName = $(this).text();
+        sessionStorage.setItem("fileName", fileName);
         $.ajax({
             url: "/documents/d?documentId="+fileName,
             type: "GET",
@@ -343,11 +344,10 @@ function transformMultiple(ps, q) {
 
             version = sessionStorage.getItem("version");
             sessionStorage.setItem("version", (parseInt(version)+1).toString());
-            console.log("set version to " + sessionStorage.getItem("version"))
             // sessionStorage.setItem("version", ver);
             end = $("#text textarea").selectionEnd;
 
-            // receive server ACK, must have one or more pending request 
+            // receive server ACK, must have one or more pending request
             // (but only one outstanding request)
             if(uid == sessionStorage.getItem("uid")) {
                 receiveAck = true
@@ -388,12 +388,12 @@ function transformMultiple(ps, q) {
         if (receiveAck) {
             bufferedOps = JSON.parse(sessionStorage.getItem("bufferedOps"));
             // console.log(bufferedOps);
-            // if there is only one pending request, then transition back to synchronized state. 
+            // if there is only one pending request, then transition back to synchronized state.
             if(bufferedOps.length == 0) {
                 sessionStorage.setItem("ACK","T");
                 sessionStorage.setItem("outstandingOp", JSON.stringify(null));
                 sessionStorage.setItem("bufferedOps", JSON.stringify([]));
-            // if there are more than one pending requests, then stay in current state. 
+            // if there are more than one pending requests, then stay in current state.
             } else {
                 // this is the operation variable
                 operation = bufferedOps[0];
@@ -441,7 +441,7 @@ function transformMultiple(ps, q) {
         $("#text textarea").keyup(function() {
             pos = $('#text textarea').prop("selectionStart");
             payload = window.event.key;
-            documentId = $("#theFileName").html();
+            documentId = sessionStorage.getItem("fileName");
             op = "INSERT";
             if (payload == "Backspace") {
                 payload = "";
