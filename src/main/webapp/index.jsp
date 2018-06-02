@@ -34,6 +34,7 @@
                     <input class="button" type="submit" value="Add File"/>
                 </form>
             </div>
+            <button id="test">run test</button>
         </div>
     </div>
     <div id="text">

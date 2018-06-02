@@ -25,10 +25,26 @@ init = function() {
   });
 }();
 
-concurWrite = function() {
-  for(i = 0; i < 10; i++)
+
+//periodically insert
+sessionStorage.setItem("count", 0);
+
+var id = 0;
+
+insertTest = function() {
+  count = sessionStorage.getItem("count");
+  console.log("count: " + count);
+  webPost(true, 0, count);
+  count = parseInt(count)+1;
+  if(count == 10)
   {
-    //TODO not working properly
-    //webPost(true, 0, "testFile", "user"+i, 0, i);
+    clearInterval(id);
   }
-}();
+  sessionStorage.setItem("count", count);
+};
+
+periodTest = function() {
+  id = setInterval(insertTest, 1000);
+};
+
+$("#test").click(periodTest);

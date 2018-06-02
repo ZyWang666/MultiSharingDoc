@@ -207,9 +207,8 @@ function transformMultiple(ps, q) {
         $("#text textarea").val(text);
     };
 
-    showFileContent = function(test, fileName) {
-        if(test != true)
-          fileName = $(this).text();
+    showFileContent = function() {
+        fileName = $(this).text();
         sessionStorage.setItem("fileName", fileName);
         $.ajax({
             url: "/documents/d?documentId="+fileName,
@@ -429,20 +428,20 @@ function transformMultiple(ps, q) {
             });
         }
     }
-    webPost = function(test, pos, documentId, uid, version, payload) {
+    //TODO TEST MODIFIED: parameter
+    webPost = function(test, pos, payload) {
         pos = $('#text textarea').prop("selectionStart");
+        documentId = sessionStorage.getItem("fileName");
+        uid = sessionStorage.getItem("uid");
+        version = sessionStorage.getItem("version");
         if(test != true)
         {
           pos = $('#text textarea').prop("selectionStart");
-          documentId = sessionStorage.getItem("fileName");
-          uid = sessionStorage.getItem("uid");
-          version = sessionStorage.getItem("version");
           payload = window.event.key;
         }
         else
-        {
           console.log("test");
-        }
+
         op = "INSERT";
         if (payload == "Backspace") {
             payload = "";
@@ -478,7 +477,6 @@ function transformMultiple(ps, q) {
 
     main = function() {
         setInterval(autoUpdate, 1000);
-
         sessionStorage.setItem("ACK", "T");
         sessionStorage.setItem("outstandingOp", JSON.stringify(null));
         sessionStorage.setItem("bufferedOps", JSON.stringify([]));
