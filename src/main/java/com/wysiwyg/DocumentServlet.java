@@ -41,6 +41,10 @@ public class DocumentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         Document document = metadataManager.getDocument(req.getParameter(DOCUMENT_ID));
+        if (document == null) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
         DocumentOutput documentOutput = new DocumentOutput(document.documentId, 
                                                         document.documentRope.toString(), 
                                                         document.ver);

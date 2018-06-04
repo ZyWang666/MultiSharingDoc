@@ -24,7 +24,7 @@ function tii(p, q) {
                 "pos": parseInt(p.pos)+1,
                 "payload": p.payload,
                 "uid": p.uid,
-            }, 
+            },
             {
                 "opcode": q.opcode,
                 "documentId": q.documentId,
@@ -70,7 +70,7 @@ function tid(p, q) {
                 "payload": q.payload,
                 "uid": q.uid,
             }
-        ] 
+        ]
     }
 }
 
@@ -160,8 +160,6 @@ function tdd(p, q) {
 }
 
 function transform(p, q) {
-    console.log(p);
-    console.log(q);
     if (p == null || q == null) {
         return [p,q];
     }
@@ -174,7 +172,6 @@ function transform(p, q) {
     } else if (p.opcode == "DELETE" && q.opcode == "DELETE") {
         return tdd(p, q);
     }
-    console.log("dafuk")
     return [p,q];
 };
 
@@ -183,7 +180,7 @@ function transformMultiple(ps, q) {
     if (q == null || ps.length == 0) {
         return [ret, q];
     }
-    
+
     for (i = 0; i < ps.length; i+=1) {
         console.log(ps[i]);
         console.log(q);
@@ -209,6 +206,7 @@ function transformMultiple(ps, q) {
 
     showFileContent = function() {
         fileName = $(this).text();
+        sessionStorage.setItem("fileName", fileName);
         $.ajax({
             url: "/documents/d?documentId="+fileName,
             type: "GET",
@@ -343,11 +341,10 @@ function transformMultiple(ps, q) {
 
             version = sessionStorage.getItem("version");
             sessionStorage.setItem("version", (parseInt(version)+1).toString());
-            console.log("set version to " + sessionStorage.getItem("version"))
             // sessionStorage.setItem("version", ver);
             end = $("#text textarea").selectionEnd;
 
-            // receive server ACK, must have one or more pending request 
+            // receive server ACK, must have one or more pending request
             // (but only one outstanding request)
             if(uid == sessionStorage.getItem("uid")) {
                 receiveAck = true
@@ -388,12 +385,12 @@ function transformMultiple(ps, q) {
         if (receiveAck) {
             bufferedOps = JSON.parse(sessionStorage.getItem("bufferedOps"));
             // console.log(bufferedOps);
-            // if there is only one pending request, then transition back to synchronized state. 
+            // if there is only one pending request, then transition back to synchronized state.
             if(bufferedOps.length == 0) {
                 sessionStorage.setItem("ACK","T");
                 sessionStorage.setItem("outstandingOp", JSON.stringify(null));
                 sessionStorage.setItem("bufferedOps", JSON.stringify([]));
-            // if there are more than one pending requests, then stay in current state. 
+            // if there are more than one pending requests, then stay in current state.
             } else {
                 // this is the operation variable
                 operation = bufferedOps[0];
@@ -428,52 +425,62 @@ function transformMultiple(ps, q) {
             });
         }
     }
+    //TODO TEST MODIFIED: parameter
+    webPost = function(test, pos, payload) {
+        pos = $('#text textarea').prop("selectionStart");
+        documentId = sessionStorage.getItem("fileName");
+        uid = sessionStorage.getItem("uid");
+        version = sessionStorage.getItem("version");
+        if(test != true)
+        {
+          pos = $('#text textarea').prop("selectionStart");
+          payload = window.event.key;
+        }
+        else
+          console.log("test");
+
+        op = "INSERT";
+        if (payload == "Backspace") {
+            payload = "";
+            op = "DELETE";
+        } else if (payload.length != 1) {
+            return;
+        }
+
+        var data = {
+            documentId: documentId,
+            pos: pos-1,
+            payload: payload,
+            opcode: op,
+            uid: uid,
+            version: version,
+        };
+
+        if (sessionStorage.getItem("ACK") === "T") {
+            sessionStorage.setItem("ACK", "F");
+            sessionStorage.setItem("outstandingOp", JSON.stringify(data))
+            $.ajax({
+                type: "POST",
+                url: "/documents/op",
+                contentType: "application/json", // NOT dataType!
+                data: JSON.stringify(data),
+            });
+        } else {
+            bufferedOps = JSON.parse(sessionStorage.getItem("bufferedOps"));
+            bufferedOps.push(data);
+            sessionStorage.setItem("bufferedOps", JSON.stringify(bufferedOps));
+        }
+    };
 
     main = function() {
         setInterval(autoUpdate, 1000);
-
         sessionStorage.setItem("ACK", "T");
         sessionStorage.setItem("outstandingOp", JSON.stringify(null));
         sessionStorage.setItem("bufferedOps", JSON.stringify([]));
 
         $("form#adduser").submit(addUser);
         $("form#addfile").submit(addFile);
-        $("#text textarea").keyup(function() {
-            pos = $('#text textarea').prop("selectionStart");
-            payload = window.event.key;
-            documentId = $("#theFileName").html();
-            op = "INSERT";
-            if (payload == "Backspace") {
-                payload = "";
-                op = "DELETE";
-            } else if (payload.length != 1) {
-                return;
-            }
-
-            var data = {
-                documentId: documentId,
-                pos: pos-1,
-                payload: payload,
-                opcode: op,
-                uid: sessionStorage.getItem("uid"),
-                version: sessionStorage.getItem("version"),
-            };
-
-            if (sessionStorage.getItem("ACK") === "T") {
-                sessionStorage.setItem("ACK", "F");
-                sessionStorage.setItem("outstandingOp", JSON.stringify(data))
-                $.ajax({
-                    type: "POST",
-                    url: "/documents/op",
-                    contentType: "application/json", // NOT dataType!
-                    data: JSON.stringify(data),
-                });
-            } else {
-                bufferedOps = JSON.parse(sessionStorage.getItem("bufferedOps"));
-                bufferedOps.push(data);
-                sessionStorage.setItem("bufferedOps", JSON.stringify(bufferedOps));
-            }
-        });
+        $("#text textarea").keyup(webPost);
     };
 
     $(document).ready(main);
