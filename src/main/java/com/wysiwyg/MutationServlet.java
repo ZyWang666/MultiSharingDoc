@@ -14,9 +14,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.AsyncContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import com.wysiwyg.meta.MetadataManager;
 import com.wysiwyg.meta.MetadataManagerImpl;
+import com.wysiwyg.meta.ConditionVariableSingleton;
 import com.wysiwyg.structs.Document;
 import com.wysiwyg.structs.Mutation;
 import com.wysiwyg.structs.Opcode;
@@ -26,7 +30,8 @@ import com.wysiwyg.operations.OperationImpl;
 
 @WebServlet(
         name = "MutationServlet",
-        urlPatterns = {"/documents/op"}
+        urlPatterns = {"/documents/op"},
+        asyncSupported = true
     )
 public class MutationServlet extends HttpServlet {
     private static final String OPCODE              = "opcode";
@@ -38,7 +43,7 @@ public class MutationServlet extends HttpServlet {
     private static final String MUTATION_DELETE     = "DELETE";
     private static final String MUTATION_INSERT     = "INSERT";
 
-    protected MetadataManager metadataManager;
+    protected final MetadataManager metadataManager;
     protected OperationalTransformation operationalTransformation;
     
     public MutationServlet() {
@@ -47,32 +52,48 @@ public class MutationServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
-        Document document = metadataManager.getDocument(req.getParameter(DOCUMENT_ID));
-        List<Mutation> mutationHistory = metadataManager.getMutationHistory(req.getParameter(DOCUMENT_ID));
-        List<Mutation> mutationDiff = new ArrayList<Mutation>();
-        for (int i = Integer.valueOf(req.getParameter(VERSION)).intValue(); 
-                i < Math.min(document.ver, Integer.valueOf(req.getParameter(VERSION)).intValue()+1); 
-                i++) {
-            // since indexInMutationHistory describes the 0-based index at the historyQueue
-            // so it is alwasy one smaller than the version returned to the client. 
-            // for example, indexInMutationHistory = 0, then version returned to client should be 1
-            // because next time client request will be version 1, which naturally fits in position 1 in historyQueue.
-            Mutation mutation = mutationHistory.get(i);
-            mutation.version = mutation.indexInMutationHistory+1;
-            // System.out.println("fetching indexInHistory: " + mutation.indexInMutationHistory);
-            // System.out.println("fetching version: " + mutation.version);
-            // System.out.println("document version: " + document.ver);
-            mutationDiff.add(mutation);
-        }
 
-        Gson gson = new Gson();
-        byte[] ret = gson.toJson(mutationDiff).getBytes();
-        ServletOutputStream out = resp.getOutputStream();
-        out.write(ret);
-        out.flush();
-        out.close();
+        final AsyncContext asyncCtx = req.startAsync(req, resp);
+        asyncCtx.start( new Runnable() {
+            public void run() {
+                ServletRequest request = asyncCtx.getRequest();
+                ServletResponse response = asyncCtx.getResponse();
+                Document document = metadataManager.getDocument(request.getParameter(DOCUMENT_ID));
+                if (document == null) {
+                    return;
+                }
+                if (document.ver <= Integer.valueOf(request.getParameter(VERSION)).intValue()) {
+                    try {
+                        metadataManager.await();
+                    } catch (InterruptedException e) {
+                        // deal with exception
+                    }
+                }
+                List<Mutation> mutationHistory = metadataManager.getMutationHistory(request.getParameter(DOCUMENT_ID));
+                List<Mutation> mutationDiff = new ArrayList<Mutation>();
+                for (int i = Integer.valueOf(request.getParameter(VERSION)).intValue(); 
+                        i < Math.min(document.ver, Integer.valueOf(request.getParameter(VERSION)).intValue()+1); 
+                        i++) {
+                    // since indexInMutationHistory describes the 0-based index at the historyQueue
+                    // so it is alwasy one smaller than the version returned to the client. 
+                    // for example, indexInMutationHistory = 0, then version returned to client should be 1
+                    // because next time client request will be version 1, which naturally fits in position 1 in historyQueue.
+                    Mutation mutation = mutationHistory.get(i);
+                    mutation.version = mutation.indexInMutationHistory+1;
+                    mutationDiff.add(mutation);
+                }
+                Gson gson = new Gson();
+                String ret = gson.toJson(mutationDiff);
+                try {
+                    response.getWriter().write( ret );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                asyncCtx.complete();
+            }
+        });
    }
 
     @Override

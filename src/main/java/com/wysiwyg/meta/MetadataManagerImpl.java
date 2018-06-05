@@ -1,5 +1,6 @@
 package com.wysiwyg.meta;
 
+import java.lang.InterruptedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,5 +47,15 @@ public class MetadataManagerImpl implements MetadataManager {
     @Override
     public List<Mutation> getMutationHistory(String documentId) {
         return MutationMapSingleton.getMutationHistory(documentId);
+    }
+
+    @Override 
+    public void await() throws InterruptedException {
+        ConditionVariableSingleton.await();
+    }
+
+    @Override
+    public void broadcast() {
+        ConditionVariableSingleton.broadcast();
     }
 }

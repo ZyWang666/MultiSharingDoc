@@ -9,6 +9,7 @@ import com.wysiwyg.structs.Document;
 
 public class DocumentMapSingleton {
     protected static Map<String, Document> documentMap;
+    protected static MetadataManager metadataManager;
 
     private DocumentMapSingleton() {}
 

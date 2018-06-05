@@ -34,7 +34,7 @@ var id = 0;
 insertTest = function() {
   count = sessionStorage.getItem("count");
   console.log("count: " + count);
-  webPost(true, 0, count);
+  webPost(true, 1, count);
   count = parseInt(count)+1;
   if(count == 10)
   {

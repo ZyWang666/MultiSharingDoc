@@ -2,6 +2,7 @@ package com.wysiwyg.operations;
 
 import com.wysiwyg.meta.MetadataManager;
 import com.wysiwyg.meta.MetadataManagerImpl;
+import com.wysiwyg.meta.ConditionVariableSingleton;
 import com.wysiwyg.structs.Document;
 import com.wysiwyg.structs.Mutation;
 
@@ -20,6 +21,7 @@ public class OperationImpl implements Operation {
         document.documentRope = document.documentRope.insert(pos, new StringBuffer(mutation.payload));
         document.ver += 1;
         metadataManager.addDocument(document);
+        metadataManager.broadcast();
         return true;
     }
 
@@ -29,10 +31,10 @@ public class OperationImpl implements Operation {
         int pos = Math.min(mutation.pos, document.documentRope.toString().length());
         pos = Math.max(0, pos);
         document.documentRope = document.documentRope.delete(pos, pos+1);
-        System.out.printf("delete, pos is %d, length is %d, content is: %s\n", 
             mutation.pos, document.documentRope.toString().length(), document.documentRope.toString());
         document.ver += 1;
         metadataManager.addDocument(document);
+        metadataManager.broadcast();
         return true;
     }
 }
