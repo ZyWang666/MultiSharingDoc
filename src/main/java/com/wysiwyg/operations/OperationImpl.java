@@ -31,7 +31,6 @@ public class OperationImpl implements Operation {
         int pos = Math.min(mutation.pos, document.documentRope.toString().length());
         pos = Math.max(0, pos);
         document.documentRope = document.documentRope.delete(pos, pos+1);
-            mutation.pos, document.documentRope.toString().length(), document.documentRope.toString());
         document.ver += 1;
         metadataManager.addDocument(document);
         metadataManager.broadcast();
