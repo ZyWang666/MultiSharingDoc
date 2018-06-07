@@ -412,32 +412,49 @@ function transformMultiple(ps, q) {
                 sessionStorage.setItem("bufferedOps", JSON.stringify(bufferedOps));
             }
         }
+        // autoUpdate();
     }
 
     autoUpdate = function() {
         fileName = $("#theFileName").html();
         ver = sessionStorage.getItem("version");
+        console.log("autoUpdate");
         if(fileName != "") {
             $.ajax({
                 url: "/documents/op?documentId=" + fileName + "&version=" + ver,
                 type: "GET",
-                success: _autoUpdate
+                success: function(data, status, jqXHR) {
+                    console.log("succ")
+                    _autoUpdate(data);
+                    setTimeout(autoUpdate, 10);
+                },
+                error: function(jqXHR, status, errorThrown) {
+                    console.log("err")
+                    if (status == 'timeout') {
+                        setTimeout(autoUpdate, 10);
+                    } else {
+                        setTimeout(autoUpdate, 5000);
+                    }
+                },
+                timeout: 5000
             });
+        } else {
+            setTimeout(autoUpdate, 5000);
         }
     }
     //TODO TEST MODIFIED: parameter
     webPost = function(test, pos, payload) {
-        pos = $('#text textarea').prop("selectionStart");
+        // pos = $('#text textarea').prop("selectionStart");
         documentId = sessionStorage.getItem("fileName");
         uid = sessionStorage.getItem("uid");
         version = sessionStorage.getItem("version");
-        if(test != true)
-        {
+        if(test != true) {
           pos = $('#text textarea').prop("selectionStart");
           payload = window.event.key;
         }
-        else
+        else {
           console.log("test");
+        }
 
         op = "INSERT";
         if (payload == "Backspace") {
@@ -473,10 +490,13 @@ function transformMultiple(ps, q) {
     };
 
     main = function() {
-        setInterval(autoUpdate, 1000);
+        // setInterval(autoUpdate, 1000);
+        
         sessionStorage.setItem("ACK", "T");
         sessionStorage.setItem("outstandingOp", JSON.stringify(null));
         sessionStorage.setItem("bufferedOps", JSON.stringify([]));
+
+        autoUpdate();
 
         $("form#adduser").submit(addUser);
         $("form#addfile").submit(addFile);

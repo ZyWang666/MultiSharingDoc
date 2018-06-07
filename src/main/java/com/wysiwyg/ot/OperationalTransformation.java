@@ -27,7 +27,6 @@ public class OperationalTransformation {
 
     public synchronized boolean enqueueMutation(Mutation mutation) {
         mutation.indexInMutationHistory = metadataManager.getMutationHistory(mutation.documentId).size();
-        // System.out.println("enqueue: " + mutation.indexInMutationHistory);
         mutation = transform(mutation);
         metadataManager.addMutation(mutation.documentId, mutation);
         mutationQueue.add(mutation);
@@ -39,7 +38,6 @@ public class OperationalTransformation {
             while (true) {
                 if (!mutationQueue.isEmpty()) {
                     Mutation mutation = mutationQueue.poll();
-                    // mutation = transform(mutation);
                     if (mutation.opcode.equals(Opcode.INSERT)) {
                         operationInstance.insert(mutation);
                     } else if (mutation.opcode.equals(Opcode.DELETE)) {

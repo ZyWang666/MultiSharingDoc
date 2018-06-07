@@ -13,4 +13,6 @@ public interface MetadataManager {
     public void addDocument(Document document);
     public List<Mutation> getMutationHistory(String documentId);
     public List<Mutation> addMutation(String documentId, Mutation mutation);
+    public void await() throws InterruptedException;
+    public void broadcast();
 }
