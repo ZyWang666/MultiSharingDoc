@@ -22,8 +22,8 @@ public class ClientTest {
   private boolean[] ackArr = new boolean[testSize];
   private String[] userArr = new String[testSize];
   private String[] userFileArr = new String[testSize];
-  private String[] bufferedOps = new String[testSize];
-  private String[] outstandingOp = new String[testSize];
+  private List<Data> bufferedOps = new ArrayList<Data>();
+  private Data[] outstandingOp = new Data[testSize];
   private int[] verArr = new int[testSize];
 
 
@@ -72,29 +72,19 @@ public class ClientTest {
         return;
       }
 
-      JSONObject obj = new JSONObject();
-
-      obj.put("documentId", fileName);
-      obj.put("pos", pos);
-      obj.put("payload", payload);
-      obj.put("opcode", op);
-      obj.put("uid", userArr[i]);
-      obj.put("version", verArr[i]);
-
+      Data data = new Data(fileName, pos, payload, op, userArr[i], verArr[i]);
+      Gson gson = new Gson();
+      String dataString = gson.toJson(data);
       if(ackArr[i])
       {
         ackArr[i] = false;
-
-        StringWriter out = new StringWriter();
-        obj.writeJSONString(out);
-        String jsonText = out.toString();
-        outstandingOp[i] = jsonText;
+        outstandingOp[i] = data;
 
         String url = "http://localhost:8080/documents/op";
         CloseableHttpClient client = HttpClients.createDefault();
         CloseableHttpResponse response1 = null;
         HttpPost httpPost = new HttpPost(url);
-        StringEntity params =new StringEntity(jsonText);
+        StringEntity params =new StringEntity(dataString);
         httpPost.addHeader("content-type", "application/json");
         httpPost.setEntity(params);
         try {
@@ -106,10 +96,7 @@ public class ClientTest {
       }
       else
       {
-        //TODO: don't know if we have to create a Data class
-        Gson g = new Gson();
-        Data d = g.fromJson(bufferedOps[i], Data.class);
-        d.push(obj);
+        bufferedops.push(data);
       }
     }
   }
@@ -124,11 +111,13 @@ public class ClientTest {
     {
       httpGet = new HttpGet(url+"?documentId="+ fileName + "&version=" + verArr[i]);
       try {
-          //TODO: not sure if it is the way to get op in java
           response1 = client.execute(httpGet);
           HttpEntity entity1 = response1.getEntity();
-          String data = EntityUtils.toString(entity1);
-          _autoupdate(data, i);
+          String dataListString = EntityUtils.toString(entity1);
+          Gson gson = new Gson();
+          Type listType = new TypeToken<ArrayList<Data>>(){}.getType();
+          ArrayList<Data> dataList = gson.fromJson(dataListString, listType);
+          _autoupdate(dataList, i);
           //Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
       } catch (IOException e) {
           //Assert.fail(e.getMessage());
@@ -138,19 +127,17 @@ public class ClientTest {
   }
 
 
-  public void _autoupdate(String data, int userIndex)
+  public void _autoupdate(ArrayList<Data> dataList, int userIndex)
   {
       boolean receiveAck = false;
-      Gson g = new Gson();
-      //TODO: not sure if it is the correct way to use json in java
-      Data ret = g.fromJson(data, Data.class);
-      for(int i = 0; i < ret.length(); i++)
+      for(int i = 0; i < dataList.size(); i++)
       {
-        String op = ret[i].opcode;
-        int pos = ret[i].pos;
-        String payload = ret[i].payload;
-        String uid = ret[i].uid;
-        int ver = ret[i].version;
+        Data data = dataList.get(i);
+        String op = data.opcode;
+        int pos = data.pos;
+        String payload = data.payload;
+        String uid = data.uid;
+        int ver = data.version;
 
         int curVer = verArr[userIndex];
         verArr[userIndex] = curVer+1;
@@ -161,7 +148,7 @@ public class ClientTest {
         }
         else
         {
-            //TODO
+          //TODO
         }
 
         if(receiveAck)
