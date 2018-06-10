@@ -2,7 +2,7 @@ package com.wysiwyg.ABCAST;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.function;
+import java.util.function.*;
 
 import com.wysiwyg.structs.*;
 import com.wysiwyg.CBCAST.CBCAST;

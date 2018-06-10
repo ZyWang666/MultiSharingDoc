@@ -7,6 +7,7 @@ import java.util.concurrent.locks.*;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.ServerSocket;
 
 import com.wysiwyg.structs.*;
 
@@ -27,11 +28,11 @@ public class Receiver extends Thread {
   public Receiver(int port, CBCAST dest) {
     _parent = dest;
     _port = port;
-    _rState = R_INIT;
+    _rState = RecvConnState.R_INIT;
 
     try {
       _serverSocket = new ServerSocket(port);
-      _rState = R_LISTEN;
+      _rState = RecvConnState.R_LISTEN;
     } catch (Exception e) {
       System.out.println("Failed to create listening port.");
       System.out.println(e);
@@ -40,7 +41,7 @@ public class Receiver extends Thread {
 
 
   public void run() {
-    while (_rState == R_LISTEN) {
+    while (_rState == RecvConnState.R_LISTEN) {
       try {
         Socket recvSocket = _serverSocket.accept();    // listening
 

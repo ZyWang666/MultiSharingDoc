@@ -3,10 +3,14 @@ package com.wysiwyg.CBCAST;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.*;
+import java.util.concurrent.TimeUnit;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -55,7 +59,7 @@ public class Sender extends Thread {
     _isConnected = SenderConnState.S_INIT;
     _tryconn_cnt = TRY_CONN_MAX;
 
-    _sList = new Queue<Mutation>;
+    _sList = new LinkedList<Mutation>();
     _qMutex = new ReentrantLock();
     _qCond = _qMutex.newCondition();
   }
@@ -74,7 +78,7 @@ public class Sender extends Thread {
         synchronized(this) {
           if (_isConnected == SenderConnState.S_LOST) {
             // TODO: recovery, node comes back!!
-            cRecover_cb();
+            // cRecover_cb();
           }
 
           _isConnected = SenderConnState.S_CONNECT;
@@ -99,7 +103,7 @@ public class Sender extends Thread {
               break;
             }
 
-            if (_qCond.await(QUEUE_WAIT_TIME) == false) {
+            if (_qCond.await(QUEUE_WAIT_TIME, TimeUnit.MILLISECONDS) == false) {
               // no messages to send, time to sleep.
               break;
             }
@@ -114,10 +118,10 @@ public class Sender extends Thread {
             _isConnected = SenderConnState.S_RETRY;
             _tryconn_cnt--;
 
-            if ((_tryconn_cnt==0) {
+            if (_tryconn_cnt==0) {
               // TODO: This IP is lost.  Callback for fault tolerance....
               // 
-              cLost_cb();
+              // cLost_cb();
 
               _isConnected = SenderConnState.S_LOST;
             }
@@ -148,7 +152,7 @@ public class Sender extends Thread {
       _qCond.signal();    
     _qMutex.unlock();
 
-    Thread.interrupt();   // wake up Sender thread if it is sleeping.
+    super.interrupt();   // wake up Sender thread if it is sleeping.
 
     return true;
   }

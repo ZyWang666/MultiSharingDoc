@@ -29,7 +29,7 @@ public class DataReceiver extends Thread {
       while (true) {
         int dataSize = inPipe.readInt();
 
-        byte[] dataRead = new bytes[dataSize];
+        byte[] dataRead = new byte[dataSize];
         inPipe.readFully(dataRead);
 
         Mutation msg = (Mutation)(Utils.deserialize(dataRead));
