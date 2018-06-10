@@ -2,6 +2,7 @@ package com.wysiwyg.ABCAST;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.function;
 
 import com.wysiwyg.structs.*;
 import com.wysiwyg.CBCAST.CBCAST;
@@ -14,18 +15,21 @@ public class ABCAST extends CBCAST {
   
   private LinkedList<Integer> _uidOrder;      // needed for assembling order based on received message.
   private Queue<Mutation> _abcastWaitList;    // messages to be delivered based on abcast total order.
+  private Consumer<Mutation> _sink_fn;
 
 
-  public ABCAST(int peerIndex, int peerCount) {
-    super(peerIndex, peerCount);
+  public ABCAST(int peerIndex, String[] allServers, int[] ports, Consumer<Mutation> cb) {
+    super(peerIndex, allServers, ports, cb);
     uid = peerIndex * UID_NODE;
     hasToken = (uid == 0)? true : false;
 
     _uidOrder = null;
     _abcastWaitList = new LinkedList<Mutation>();
+    _sink_fn = cb;
   }
 
  
+  @Override
   public synchronized 
   void bcast(Mutation msg) {
     uid++;
@@ -49,6 +53,7 @@ public class ABCAST extends CBCAST {
   }
 
 
+  @Override
   public synchronized 
   void onReceive(Mutation msg) {
     if (hasToken) {
@@ -66,6 +71,7 @@ public class ABCAST extends CBCAST {
         super.onReceive(msg, null, false, null);
       } else {
         _uidOrder = new LinkedList<Integer>();   
+        // CBCAST will deliver msg for the node with token, otherwise, ABCAST handled for non-token node.
         super.onReceive(msg, _uidOrder, true, null);
 
         // send setOrder message
@@ -99,7 +105,8 @@ public class ABCAST extends CBCAST {
               if ((m.syncInfo.setOrderInd == false) && (m.syncInfo.uid == orderid.intValue())) {
                 isfound = true;
 
-                // TODO: deliver m to OPT
+                // deliver m to OPT
+                _sink_fn.accept(m);
                 _abcastWaitList.remove(m);
                 break;
               }
