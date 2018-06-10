@@ -1,5 +1,5 @@
 function tii(p, q) {
-    if (parseInt(p.pos) < parseInt(q.pos)) {
+    if (parseInt(p.pos) < parseInt(q.pos) || (parseInt(p.pos) == parseInt(q.pos) && p.uid > q.uid)) {
         return [
             {
                 "opcode": p.opcode,
@@ -182,15 +182,10 @@ function transformMultiple(ps, q) {
     }
 
     for (i = 0; i < ps.length; i+=1) {
-        console.log(ps[i]);
-        console.log(q);
         transformL = transform(ps[i], q);
         ret.push(transformL[0]);
-        console.log(transformL[0]);
         q = transformL[1];
-        console.log(q)
     }
-    console.log(ret)
     return [ret, q];
 };
 
@@ -341,7 +336,6 @@ function transformMultiple(ps, q) {
 
             version = sessionStorage.getItem("version");
             sessionStorage.setItem("version", (parseInt(version)+1).toString());
-            // sessionStorage.setItem("version", ver);
             end = $("#text textarea").selectionEnd;
 
             // receive server ACK, must have one or more pending request
@@ -384,7 +378,6 @@ function transformMultiple(ps, q) {
 
         if (receiveAck) {
             bufferedOps = JSON.parse(sessionStorage.getItem("bufferedOps"));
-            // console.log(bufferedOps);
             // if there is only one pending request, then transition back to synchronized state.
             if(bufferedOps.length == 0) {
                 sessionStorage.setItem("ACK","T");
@@ -395,7 +388,6 @@ function transformMultiple(ps, q) {
                 // this is the operation variable
                 operation = bufferedOps[0];
                 operation.version = parseInt(sessionStorage.getItem("version")).toString();
-                console.log(operation);
                 // store the current outstanding operation
                 sessionStorage.setItem("outstandingOp", JSON.stringify(operation));
 

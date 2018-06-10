@@ -34,7 +34,7 @@ public class UserServletTest {
         addUserTest();
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(URL);
-    
+
         try {
             CloseableHttpResponse response1 = client.execute(httpGet);
             Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
