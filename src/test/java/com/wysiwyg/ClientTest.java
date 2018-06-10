@@ -127,10 +127,8 @@ public class ClientTest {
             } catch (IOException e) {
                 Assert.fail(e.getMessage());
             }
-
         }
     }
-
 
     public void _autoupdate(String raw, int userIndex) {
         boolean receiveAck = false;
