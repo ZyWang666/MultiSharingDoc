@@ -52,8 +52,8 @@ public class OperationalTransformation {
 
     protected Mutation tii(Mutation p, Mutation q) {
         // need user identifier to break tie
-        // if (p.pos < q.pos || (p.pos == q.pos && p.uid.compareTo(q.uid) > 0)) {
-        if (p.pos < q.pos) {
+        if (p.pos < q.pos || (p.pos == q.pos && p.uid.compareTo(q.uid) > 0)) {
+        // if (p.pos < q.pos) {
             return p;
         } else {
             return new Mutation(p.opcode,
