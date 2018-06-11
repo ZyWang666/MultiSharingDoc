@@ -87,7 +87,8 @@ public class MutationServlet extends HttpServlet {
                 Gson gson = new Gson();
                 String ret = gson.toJson(mutationDiff);
                 try {
-                    response.getWriter().write( ret );
+                    // System.out.println(ret);
+                    response.getWriter().write(ret);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -100,6 +101,7 @@ public class MutationServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         JsonObject data = new Gson().fromJson(req.getReader(), JsonObject.class);
+        // System.out.println(data);
         Document document = metadataManager.getDocument(data.get(DOCUMENT_ID).getAsString());
         int pos = Integer.valueOf(data.get(MODIFY_POSITION).getAsString()).intValue();
         String payload = data.get(MODIFY_PAYLOAD).getAsString();
