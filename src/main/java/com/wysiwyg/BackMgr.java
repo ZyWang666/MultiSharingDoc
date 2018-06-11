@@ -66,7 +66,7 @@ public class BackMgr {
 
       reader.close();
     } catch (IOException e) {
-      System.out.println("Error reading config file!");
+      System.out.println("Error reading config file! " + e);
       return;
     }
       
