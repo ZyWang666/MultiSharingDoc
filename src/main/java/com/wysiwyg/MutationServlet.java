@@ -28,6 +28,7 @@ import com.wysiwyg.ot.OperationalTransformation;
 import com.wysiwyg.operations.Operation;
 import com.wysiwyg.operations.OperationImpl;
 
+
 @WebServlet(
         name = "MutationServlet",
         urlPatterns = {"/documents/op"},
@@ -45,10 +46,12 @@ public class MutationServlet extends HttpServlet {
 
     protected final MetadataManager metadataManager;
     protected OperationalTransformation operationalTransformation;
+    private BackMgr _backend;
     
     public MutationServlet() {
         metadataManager = new MetadataManagerImpl();
         operationalTransformation = new OperationalTransformation(new OperationImpl());
+        _backend = new BackMgr(operationalTransformation);
     }
 
     @Override
@@ -116,5 +119,6 @@ public class MutationServlet extends HttpServlet {
         String uid = data.get(UID).getAsString();
         Mutation mutation = new Mutation(opcode, document.documentId, pos, payload, uid, version);
         operationalTransformation.enqueueMutation(mutation);
+        _backend.bcast(mutation);
    }
 }
