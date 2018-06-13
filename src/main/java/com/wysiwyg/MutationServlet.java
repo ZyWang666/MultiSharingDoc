@@ -121,6 +121,6 @@ public class MutationServlet extends HttpServlet {
         String uid = data.get(UID).getAsString();
         Mutation mutation = new Mutation(opcode, document.documentId, pos, payload, uid, version);
         operationalTransformation.enqueueMutation(mutation);
-        _backend.bcast(mutation);
+        // _backend.bcast(mutation);
    }
 }
