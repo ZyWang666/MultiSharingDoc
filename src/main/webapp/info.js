@@ -1,5 +1,6 @@
 function tii(p, q) {
-    if (parseInt(p.pos) < parseInt(q.pos) || (parseInt(p.pos) == parseInt(q.pos) && p.uid > q.uid)) {
+    // if (parseInt(p.pos) < parseInt(q.pos) || (parseInt(p.pos) == parseInt(q.pos) && p.uid > q.uid)) {
+    if (parseInt(p.pos) <= parseInt(q.pos)) {
         return [
             {
                 "opcode": p.opcode,
@@ -441,8 +442,8 @@ function transformMultiple(ps, q) {
         uid = sessionStorage.getItem("uid");
         version = sessionStorage.getItem("version");
         if(test != true) {
-          pos = $('#text textarea').prop("selectionStart");
-          payload = window.event.key;
+            pos = $('#text textarea').prop("selectionStart");
+            payload = window.event.key;
         }
         else {
           console.log("test");
@@ -455,6 +456,14 @@ function transformMultiple(ps, q) {
         } else if (payload.length != 1) {
             return;
         }
+
+        // if (op == "INSERT") {
+        //     newText = $("#text textarea").val().substring(0,pos-1) + payload +
+        //             $("#text textarea").val().substring(pos-1,
+        //             $("#text textarea").val().length);
+
+        //     $("#text textarea").val(newText);
+        // }
 
         var data = {
             documentId: documentId,

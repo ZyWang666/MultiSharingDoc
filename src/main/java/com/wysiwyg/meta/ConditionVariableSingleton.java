@@ -10,7 +10,7 @@ public class ConditionVariableSingleton {
 
     private ConditionVariableSingleton() {}
 
-    public static Condition getConditionVariableInstance() {
+    public static synchronized Condition getConditionVariableInstance() {
         if (lock == null) {
             synchronized (ConditionVariableSingleton.class) {
                 if (lock == null) {
@@ -23,10 +23,7 @@ public class ConditionVariableSingleton {
     }
 
     public static void await() throws InterruptedException {
-        if (lock == null) {
-            lock = new ReentrantLock();
-            conditionVariable = lock.newCondition();
-        }
+        getConditionVariableInstance();
         lock.lock();
         try {
             conditionVariable.await();
@@ -37,10 +34,7 @@ public class ConditionVariableSingleton {
     }
 
     public static void broadcast() {
-        if (lock == null) {
-            lock = new ReentrantLock();
-            conditionVariable = lock.newCondition();
-        }
+        getConditionVariableInstance();
         lock.lock();
         conditionVariable.signalAll();
         lock.unlock();
