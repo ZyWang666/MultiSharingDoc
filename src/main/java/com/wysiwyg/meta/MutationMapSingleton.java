@@ -43,13 +43,11 @@ public class MutationMapSingleton {
     }
 
     public static synchronized List<Mutation> getMutationHistory(String documentId) {
-        // if (mutationMap == null) {
-        //     mutationMap = new ConcurrentHashMap<String, List<Mutation>>();
-        // }
         getMutationMapInstance();
         if (!mutationMap.containsKey(documentId)) {
             return new ArrayList<Mutation>();
         }
+
         return mutationMap.get(documentId);
     }
 }

@@ -23,8 +23,10 @@ import com.wysiwyg.ot.OperationalTransformation;
 
 
 public class BackMgr {
-  private static final String _CONFIG_FILE = "CONFIG";
-  private static final String _MYIP_URL = "http://checkip.amazonaws.com/";
+  public static final String CONFIG_FILE = "CONFIG";
+  public static final String CACHE_INDEX = ".idx";
+//  private static final String _MYIP_URL = "http://checkip.amazonaws.com/";
+  private static final String _MYIP_URL = "internal_only";
 
   public String[] serverIPs;
   public int[] serverPorts;
@@ -57,7 +59,7 @@ public class BackMgr {
     int myIndex = -1;
 
     try {
-      BufferedReader reader = new BufferedReader(new FileReader(_CONFIG_FILE));
+      BufferedReader reader = new BufferedReader(new FileReader(CONFIG_FILE));
 
       String line = null;
       while ((line = reader.readLine()) != null) {
@@ -85,7 +87,25 @@ public class BackMgr {
       }
     }
 
-    assert myIndex != -1 : "My IP not found!";    
+//    assert myIndex != -1 : "My IP not found!";    
+    if (myIndex == -1) {
+      String line;
+
+      try {
+        BufferedReader readCache = new BufferedReader(new FileReader(CACHE_INDEX));
+        line = readCache.readLine();
+        readCache.close();
+      } catch (IOException e) {
+        System.out.println("Error: No index identified! " + e);
+        return;
+      }
+
+      assert line.length()>0 : "My Index not identified!";
+
+      myIndex = Integer.valueOf(line);
+
+      assert myIndex < lines.size() : "Invalid Index!";
+    }
     
     _abcast = new ABCAST(myIndex, serverIPs, serverPorts, msg -> ot.enqueueMutation(msg));
   }

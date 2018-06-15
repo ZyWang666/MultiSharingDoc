@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<<<<<<< HEAD
 <testsuite tests="1" failures="0" name="com.wysiwyg.ClientTest" time="9.21" errors="0" skipped="0">
+=======
+<testsuite tests="1" failures="0" name="com.wysiwyg.ClientTest" time="40.125" errors="0" skipped="0">
+>>>>>>> cdbc0f74044661a284d8405b954b469e7c46fe6e
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/jre/lib"/>
@@ -64,5 +68,9 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
+<<<<<<< HEAD
   <testcase classname="com.wysiwyg.ClientTest" name="integrationTest" time="9.21"/>
+=======
+  <testcase classname="com.wysiwyg.ClientTest" name="integrationTest" time="40.124"/>
+>>>>>>> cdbc0f74044661a284d8405b954b469e7c46fe6e
 </testsuite>

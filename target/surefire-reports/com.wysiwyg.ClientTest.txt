@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.wysiwyg.ClientTest
 -------------------------------------------------------------------------------
+<<<<<<< HEAD
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.254 sec
+=======
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 40.125 sec
+>>>>>>> cdbc0f74044661a284d8405b954b469e7c46fe6e

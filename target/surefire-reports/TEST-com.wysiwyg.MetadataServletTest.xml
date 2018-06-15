@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<<<<<<< HEAD
 <testsuite tests="2" failures="0" name="com.wysiwyg.MetadataServletTest" time="0.015" errors="0" skipped="0">
+=======
+<testsuite tests="2" failures="0" name="com.wysiwyg.MetadataServletTest" time="0.001" errors="0" skipped="0">
+>>>>>>> cdbc0f74044661a284d8405b954b469e7c46fe6e
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home/jre/lib"/>
@@ -65,5 +69,9 @@
     <property name="sun.cpu.isalist" value=""/>
   </properties>
   <testcase classname="com.wysiwyg.MetadataServletTest" name="getDocumentTest" time="0"/>
+<<<<<<< HEAD
   <testcase classname="com.wysiwyg.MetadataServletTest" name="addDocumentTest" time="0.015"/>
+=======
+  <testcase classname="com.wysiwyg.MetadataServletTest" name="addDocumentTest" time="0"/>
+>>>>>>> cdbc0f74044661a284d8405b954b469e7c46fe6e
 </testsuite>

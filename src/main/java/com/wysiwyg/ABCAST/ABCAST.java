@@ -33,6 +33,7 @@ public class ABCAST extends CBCAST {
   public synchronized 
   void bcast(Mutation msg) {
     uid++;
+    System.out.println("ABCAST::bcast uid = " + uid);
 
     // prepare ABCAST portion of info.
     msg.syncInfo.uid = uid;
@@ -42,6 +43,8 @@ public class ABCAST extends CBCAST {
     super.bcast(msg);
 
     // send setOrder
+    // setOrder message only sent when the msg is loopbacked.
+/*
     if (hasToken) {
       // prepare setOrder message and then send via normal CBCAST.
       LinkedList<Integer> txUID = new LinkedList<Integer>();
@@ -50,12 +53,23 @@ public class ABCAST extends CBCAST {
       Mutation orderMsg = new Mutation(uid, txUID);
       super.bcast(orderMsg);    // broadcast setOrder message
     }
+*/
   }
 
 
   @Override
   public synchronized 
   void onReceive(Mutation msg) {
+    // Logging
+    if (msg.syncInfo.setOrderInd == false) {
+      System.out.println("ABCAST::onReceive uid = "+msg.syncInfo.uid+" size = "+msg.payload.length()+" opcode: "+msg.opcode);
+    } else {
+      System.out.println("ABCAST::onReceive uid = "+msg.syncInfo.uid+" setOrderInd: "+msg.syncInfo.setOrderInd);
+    }
+
+
+    boolean ret;
+
     if (hasToken) {
 /*
       1. initially, setOrder message broadcast does not involve local queue, just completely handled in the
@@ -68,16 +82,28 @@ public class ABCAST extends CBCAST {
 */
       // message must be received from non-token peers.
       if (delayMessage(msg)) {
-        super.onReceive(msg, null, false, null);
+        ret = super.onReceive(msg, null, false, null);
+        System.out.println("token delay: "+ret);
       } else {
         _uidOrder = new LinkedList<Integer>();   
         // CBCAST will deliver msg for the node with token, otherwise, ABCAST handled for non-token node.
-        super.onReceive(msg, _uidOrder, true, null);
+        // token node does not truly need to use setOrder message, it just needs to create and send
+        // to pears.  But the setOrder message needs to sink through CBCAST to update timeVectors and
+        // it can then be discarded there after timeVectors update and ordering.
+        ret = super.onReceive(msg, _uidOrder, true, null);
+        System.out.println("token delay: "+ret);
 
-        // send setOrder message
-        uid++;
-        Mutation orderMsg = new Mutation(uid, _uidOrder);
-        super.bcast(orderMsg);    // broadcast setOrder message
+        // setOrder message shall still be received and broadcast via CBCAST here, to make sure 
+        // timeVectors are all good.  But this should be the only place to send setOrder message and
+        // it should only be sent if the received messages which finally have time-expired and ready
+        // to be consumed.  setOrder message should not only depend on current directly received msg
+        // but on if there are messages available to be consumed which setOrder messages themselves
+        // should not be counted as consumable.
+        if (_uidOrder.size() > 0) {
+          uid++;
+          Mutation orderMsg = new Mutation(uid, _uidOrder);
+          super.bcast(orderMsg);    // broadcast setOrder message
+        }
       }
 
       return;
@@ -85,6 +111,8 @@ public class ABCAST extends CBCAST {
 
     // for non-token nodes
     if (super.onReceive(msg, null, false, _abcastWaitList) == false) {
+      System.out.println("non-token delay: false");
+
       for (Mutation order_msg : _abcastWaitList) {
         // find all the setOrder message delivered
         if (order_msg.syncInfo.setOrderInd == true) {
@@ -122,6 +150,9 @@ public class ABCAST extends CBCAST {
         }
       }   // end for
     }   // end if onReceive for non-token
+    else {
+      System.out.println("non-token delay: true");
+    }
   }  // end function onReceive
 }
 
