@@ -26,21 +26,27 @@ public class MutationMapSingleton {
     }
 
     public static synchronized List<Mutation> addMutation(String documentId, Mutation mutation) {
-        if (mutationMap == null) {
-            mutationMap = new ConcurrentHashMap<String, List<Mutation>>();
-        }
+        // if (mutationMap == null) {
+        //     mutationMap = new ConcurrentHashMap<String, List<Mutation>>();
+        // }
+        getMutationMapInstance();
         if (!mutationMap.containsKey(documentId)) {
             mutationMap.put(documentId, new ArrayList<Mutation>());
         }
         List<Mutation> mutationHistory = mutationMap.get(documentId);
         mutationHistory.add(mutation);
+        // System.out.println(mutationHistory.size());
+        if (mutationHistory.size() == 10 * 20) {
+            System.out.println(System.nanoTime());
+        }
         return mutationMap.put(documentId, mutationHistory);
     }
 
     public static synchronized List<Mutation> getMutationHistory(String documentId) {
-        if (mutationMap == null) {
-            mutationMap = new ConcurrentHashMap<String, List<Mutation>>();
-        }
+        // if (mutationMap == null) {
+        //     mutationMap = new ConcurrentHashMap<String, List<Mutation>>();
+        // }
+        getMutationMapInstance();
         if (!mutationMap.containsKey(documentId)) {
             return new ArrayList<Mutation>();
         }

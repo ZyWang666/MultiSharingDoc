@@ -2,8 +2,12 @@ package com.wysiwyg;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.Math;
 import java.lang.reflect.*;
 import java.lang.StringBuilder;
 import java.lang.InterruptedException;
@@ -138,7 +142,8 @@ public class ClientTest {
                     CloseableHttpResponse response1 = client.execute(httpGet);
                     HttpEntity entity1 = response1.getEntity();
                     String data = EntityUtils.toString(entity1);
-                    Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
+                    // System.out.println(response1.getStatusLine().getStatusCode());
+                    // Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
                     _autoupdate(data);
                 } catch (IOException e) {
                     Assert.fail(e.getMessage());
@@ -211,18 +216,18 @@ public class ClientTest {
         }
         
         public void run() {
-            System.out.printf("Client %s running\n", this.userId);
+            // System.out.printf("Client %s running\n", this.userId);
             for (int i = 0; i < NUMBER_OF_CHARS; i++) {
                 if (shouldPost) {
-                    // this.post(String.format("%d", i%10), 1);
-                    this.post(this.word, 1);
+                    this.post(String.format("%d", i%10), 1);
+                    // this.post(this.word, 1);
                 }
             }
             new Thread(new ClientAutoUpdate()).start();
         }
     }
 
-    static final int CLIENT_AMOUNT = 20;
+    static final int CLIENT_AMOUNT = 10;
     static final String FILE_NAME = "File";
     static final String DOCUMENT_URL = "http://localhost:8080/documents";
 
@@ -450,7 +455,7 @@ public class ClientTest {
     public void integrationTest() {
         List<Client> clientList = new ArrayList<Client>();
         for (int i = 0; i < CLIENT_AMOUNT; i++) {
-            clientList.add(new Client(String.format("user%d", i), true, String.format("%d", i))
+            clientList.add(new Client(String.format("user%d", i), true, String.format("%d", i%10))
                             .init()
                         );
         }
@@ -463,11 +468,47 @@ public class ClientTest {
             new Thread(clientList.get(i)).start();
         }
 
-        try {
-            Thread.sleep(40000);
-        } catch (Exception e) {
+        // try {
+        //     Thread.sleep(40000);
+        // } catch (Exception e) {
 
+        // }
+        long beginTime = System.nanoTime();
+        System.out.println(beginTime);
+        // System.out.println(beginTime);
+        int finishCount = 0;
+        while (true) {
+            for (int i = 0; i < CLIENT_AMOUNT; i++) {
+                // System.out.println(clientList.get(i).text.length());
+                if (clientList.get(i).text.length() == CLIENT_AMOUNT * Client.NUMBER_OF_CHARS) {
+                    finishCount++;
+                }
+            }
+            // System.out.println(finishCount);
+            if (finishCount == CLIENT_AMOUNT) {
+                break;
+            }
+            finishCount = 0;
         }
+        // long endTime = System.nanoTime();
+
+        // System.out.println((endTime - beginTime) / Math.pow(10, 9));
+        // double totalTime = (endTime - beginTime) / Math.pow(10, 9);
+        // try {
+        //     // PrintWriter printWriter = new PrintWriter("SingleBackendPerformance.txt");
+        //     // printWriter.append(new StringBuffer(String.format("%d %d %f\n", CLIENT_AMOUNT, Client.NUMBER_OF_CHARS, totalTime)));
+        //     // printWriter.println(String.format("%d %d %f\n", CLIENT_AMOUNT, Client.NUMBER_OF_CHARS, totalTime));
+        //     FileWriter fileWriter = new FileWriter(new File("SingleBackendPerformance.txt"), true);
+        //     fileWriter.append(new StringBuffer(String.format("%d %d %f\n", CLIENT_AMOUNT, Client.NUMBER_OF_CHARS, totalTime)));
+        //     fileWriter.flush();
+        // } catch (IOException e) {
+        //     System.err.println("fileNotFound");
+        //     try {
+        //         new File("SingleBackendPerformance.txt").createNewFile();
+        //     } catch (IOException ex) {
+        //         System.err.println(ex);
+        //     }
+        // }
 
         for (int i = 0; i < CLIENT_AMOUNT-1; i++) {
             // System.out.println(clientList.get(i).text);

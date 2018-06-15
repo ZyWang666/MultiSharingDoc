@@ -75,6 +75,10 @@ public class MutationServlet extends HttpServlet {
                     }
                 }
                 List<Mutation> mutationHistory = metadataManager.getMutationHistory(request.getParameter(DOCUMENT_ID));
+                // test bench 
+                // if (mutationHistory.size() >= 20) {
+                    // System.out.println(System.nanoTime());
+                // }
                 List<Mutation> mutationDiff = new ArrayList<Mutation>();
                 for (int i = Integer.valueOf(request.getParameter(VERSION)).intValue(); 
                         i < Math.min(document.ver, Integer.valueOf(request.getParameter(VERSION)).intValue()+1); 
