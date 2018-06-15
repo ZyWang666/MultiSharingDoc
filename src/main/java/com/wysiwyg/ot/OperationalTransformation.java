@@ -26,6 +26,7 @@ public class OperationalTransformation {
     }
 
     public synchronized boolean enqueueMutation(Mutation mutation) {
+        System.out.println("OT enqueue uid: "+mutation.uid+" version: "+mutation.version+" sync uid: "+mutation.syncInfo.uid);
         mutation.indexInMutationHistory = metadataManager.getMutationHistory(mutation.documentId).size();
         mutation = transform(mutation);
         metadataManager.addMutation(mutation.documentId, mutation);

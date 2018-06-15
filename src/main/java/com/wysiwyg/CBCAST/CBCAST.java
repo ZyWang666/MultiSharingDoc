@@ -30,12 +30,13 @@ public class CBCAST {
     _receiver = new Receiver(ports[id], this);
     _receiver.start();
 
-    _senders = new ArrayList<Sender>(peerCount);
+    _senders = new ArrayList<Sender>();
 
     for (int i=0; i<peerCount; i++) {
       if (i != id) {
-        _senders.add(i, new Sender(allServers[i], ports[i]));
-        _senders.get(i).start();
+        Sender s = new Sender(allServers[i], ports[i]);
+        _senders.add(s);
+        s.start();
       }
     }
   }
@@ -43,16 +44,25 @@ public class CBCAST {
 
   // to be overridden by ABCAST 
   public synchronized void bcast(Mutation msg) {
-    timeVector.VT[id] = timeVector.VT[id] + 1;       // TBD: take care of roll-over?
+    // Logging
+    System.out.println("CBCAST::bcast uid: "+msg.syncInfo.uid+" setorder: "+msg.syncInfo.setOrderInd);
+
+    // don't update timeVector here since all msg needs to be looped back now.  So has to let
+    // receive side update TV.
+//    timeVector.VT[id] = timeVector.VT[id] + 1;       // TBD: take care of roll-over?
     msg.syncInfo.srcIndex = id;
     msg.syncInfo.timeVector.update(timeVector);
+    msg.syncInfo.timeVector.VT[id] = msg.syncInfo.timeVector.VT[id] + 1;
 
     // Broadcasting to all addresses, need to distinguish between message type (ABCAST already does this)
     for (int i=0; i<_senders.size(); i++) {
-      if (i != id) {
         _senders.get(i).send(msg);
-      }
     }
+
+    // send to self after CBCAST ordering.  ABCAST should have this called overridden function.
+    // setOrder msg should also be loopbacked here because timeVector depends on the increment.
+    // direct OT enqueue should not be done in MutationServlet any more.
+    onReceive(msg);
   }
 
   protected synchronized boolean delayMessage(Mutation msg) {
@@ -61,12 +71,18 @@ public class CBCAST {
     // should this be > ?, older version: != VT[si]+1
     // older version probably more correct because only to reflect changes once.
     if (msg.syncInfo.timeVector.VT[si] != timeVector.VT[si] + 1) {
+// ydb
+      System.out.println("index: "+si+" msg tv: "+msg.syncInfo.timeVector.VT[si]+"  TV: "+timeVector.VT[si]);
+//
       return true;
     }
 
     for (int i=0; i<timeVector.peerCount; i++) {
       if (i != si) {
         if (msg.syncInfo.timeVector.VT[i] > timeVector.VT[i]) {
+// ydb
+          System.out.println("index: "+i+"msg tv: "+msg.syncInfo.timeVector.VT[i]+"  TV: "+timeVector.VT[i]);
+//
           return true;
         }
       }
@@ -78,18 +94,27 @@ public class CBCAST {
   public synchronized boolean onReceive(Mutation msg, LinkedList<Integer> order, boolean recOrder, Queue<Mutation> output) {
     boolean delayed;
 
+    // Logging
+    System.out.println("CBCAST::onReceive recOrder: "+recOrder+" uid: "+msg.syncInfo.uid+" srcIndex: "+msg.syncInfo.srcIndex+" setOrder: "+msg.syncInfo.setOrderInd);
+
+
     if (delayMessage(msg)) {
       _waitList.add(msg);
       delayed = true;
     } else {
       if (output == null) {
         // deliver messasge to local app., to OT.  Should apply effect first, otherwise, reverse order.
-        _sink_fn.accept(msg);
+        // setOrder loopback message shall be ignored and not to be delivered.
+        if (msg.syncInfo.setOrderInd == false) {
+          _sink_fn.accept(msg);
+        }
       } else {
-        output.add(msg);
+        output.add(msg);    // both setOrder and received msg shall be queued.
       }
 
-      if (recOrder == true) {
+      // only regular received msg uid shall be traced.  setOrder msg shall not be traced.
+      // this avoids inf. loop for token node.
+      if ((recOrder == true) && (msg.syncInfo.setOrderInd == false)) {
         order.add(msg.syncInfo.uid);              // set order
       }
       timeVector.merge(timeVector, msg.syncInfo.timeVector);
@@ -112,6 +137,9 @@ public class CBCAST {
   // to be overriden by ABCAST
   public synchronized 
   void onReceive(Mutation msg) {
+    // Logging
+    System.out.println("CBCAST::onReceive to be overridden.");
+
     onReceive(msg, null, false, null);
   }
 }

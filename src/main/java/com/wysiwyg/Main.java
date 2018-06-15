@@ -1,6 +1,8 @@
 package com.wysiwyg;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.lang.Integer;
 
 import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.core.StandardContext;
@@ -8,9 +10,16 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
+
+        assert args.length>0 : "My Index missing!";
+
+        PrintWriter writer = new PrintWriter(BackMgr.CACHE_INDEX, "UTF-8");
+        writer.println(args[0]);
+        writer.close();
 
         String webappDirLocation = "src/main/webapp/";
         Tomcat tomcat = new Tomcat();

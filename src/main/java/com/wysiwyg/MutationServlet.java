@@ -59,14 +59,25 @@ public class MutationServlet extends HttpServlet {
             throws ServletException, IOException {
 
         final AsyncContext asyncCtx = req.startAsync(req, resp);
+// ydb fix2
+        asyncCtx.setTimeout(900000000);
+//
+
         asyncCtx.start( new Runnable() {
             public void run() {
                 ServletRequest request = asyncCtx.getRequest();
                 ServletResponse response = asyncCtx.getResponse();
                 Document document = metadataManager.getDocument(request.getParameter(DOCUMENT_ID));
-                if (document == null) {
+                if ((document == null) || (request.getParameter(DOCUMENT_ID)==null)) {
                     return;
                 }
+
+
+// ydb fix2
+//                String docID = request.getParameter(DOCUMENT_ID);
+//                int docVer = Integer.valueOf(request.getParameter(VERSION)).intValue();
+//
+
                 if (document.ver <= Integer.valueOf(request.getParameter(VERSION)).intValue()) {
                     try {
                         metadataManager.await();
@@ -74,11 +85,38 @@ public class MutationServlet extends HttpServlet {
                         // deal with exception
                     }
                 }
+// ydb
+/*
+                if (request.getParameter(DOCUMENT_ID)==null) {
+                  StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+
+                  for (int i=1; i<elements.length; i++) {
+                    StackTraceElement s = elements[i];
+                    System.out.println("\tat " + s.getClassName() + "." + s.getMethodName()
+                      + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+                  }
+                }
+*/
+//
+
+// ydb fix
+                request = asyncCtx.getRequest();
+                response = asyncCtx.getResponse();
+//
+
+// ydb fix2
                 List<Mutation> mutationHistory = metadataManager.getMutationHistory(request.getParameter(DOCUMENT_ID));
+//                List<Mutation> mutationHistory = metadataManager.getMutationHistory(docID);
+//
+
                 List<Mutation> mutationDiff = new ArrayList<Mutation>();
+
+// ydb fix2
                 for (int i = Integer.valueOf(request.getParameter(VERSION)).intValue(); 
                         i < Math.min(document.ver, Integer.valueOf(request.getParameter(VERSION)).intValue()+1); 
                         i++) {
+//                for (int i = docVer; i < Math.min(document.ver, docVer+1); i++) {
+// }
                     // since indexInMutationHistory describes the 0-based index at the historyQueue
                     // so it is alwasy one smaller than the version returned to the client. 
                     // for example, indexInMutationHistory = 0, then version returned to client should be 1
@@ -120,7 +158,8 @@ public class MutationServlet extends HttpServlet {
         int version = Integer.valueOf(data.get(VERSION).getAsString()).intValue();
         String uid = data.get(UID).getAsString();
         Mutation mutation = new Mutation(opcode, document.documentId, pos, payload, uid, version);
-        operationalTransformation.enqueueMutation(mutation);
-        // _backend.bcast(mutation);
+        // mutation shall be ordered before enqueuing which would be done by receiver cb.
+//        operationalTransformation.enqueueMutation(mutation);
+        _backend.bcast(mutation);
    }
 }
