@@ -27,7 +27,7 @@ public class Main {
         BufferedReader bufferedReader = new BufferedReader(new FileReader("CONFIG"));
         int lineCount = 0;
         String webPort = null;
-        while (lineCount < Integer.parseInt(args[0])) {
+        while (lineCount <= Integer.parseInt(args[0])) {
             lineCount++;
             String line = bufferedReader.readLine();
             String[] info = line.split(":");

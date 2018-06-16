@@ -27,9 +27,10 @@ import com.google.gson.reflect.TypeToken;
 
 public class ClientTest {
     class Client implements Runnable {
-        static final String USER_URL = "http://localhost:8080/users";
-        static final String OP_URL = "http://localhost:8080/documents/op";
-        static final int NUMBER_OF_CHARS = 20;
+        String[] USER_URL;      
+        String[] OP_URL;
+        // "http://localhost:8080/documents/op";
+        static final int NUMBER_OF_CHARS = 2;
         boolean ack;
         String userId;
         int ver;
@@ -37,6 +38,7 @@ public class ClientTest {
         List<Data> bufferedOps;
         StringBuilder text;
         boolean shouldPost;
+        int index;
         /*  To emulate a js single threaded mechanism,
             the state is either in 'receiving' or 'posting',
             but not interleave. 
@@ -50,7 +52,7 @@ public class ClientTest {
          */
         // Condition conditionVariable;
 
-        public Client(String userId, boolean shouldPost, String word) {
+        public Client(String userId, boolean shouldPost, String word, int index) {
             this.ack = true;
             this.userId = userId;
             this.ver = 0;
@@ -61,17 +63,25 @@ public class ClientTest {
             this.word = word;
             /* A fair lock */
             this.stateMachineLock = new ReentrantLock(true);
-            // this.conditionVariable = stateMachineLock.newCondition();
+            this.index = index;
+            USER_URL = new String[2];
+            OP_URL = new String[2];
+            USER_URL[0] = "http://localhost:6000/users";
+            USER_URL[1] = "http://localhost:5000/users";
+            OP_URL[0] = "http://localhost:6000/documents/op";
+            OP_URL[1] = "http://localhost:5000/documents/op";
         }
 
         public Client init() {
-            CloseableHttpClient client = HttpClients.createDefault();
-            HttpPost httpPost = new HttpPost(USER_URL + "?user=" + this.userId);
-            try {
-                CloseableHttpResponse response1 = client.execute(httpPost);
-                Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
-            } catch (IOException e) {
-                Assert.fail(e.getMessage());
+            for (int i = 0; i < 2; i++) {
+                CloseableHttpClient client = HttpClients.createDefault();
+                HttpPost httpPost = new HttpPost(USER_URL[i] + "?user=" + this.userId);
+                try {
+                    CloseableHttpResponse response1 = client.execute(httpPost);
+                    Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
+                } catch (IOException e) {
+                    Assert.fail(e.getMessage());
+                }
             }
             return this;
         }
@@ -109,7 +119,7 @@ public class ClientTest {
                 outstandingOp = data;
 
                 CloseableHttpClient client = HttpClients.createDefault();
-                HttpPost httpPost = new HttpPost(OP_URL);
+                HttpPost httpPost = new HttpPost(OP_URL[index]);
                 try {
                     StringEntity params = new StringEntity(gson.toJson(outstandingOp));
                     httpPost.addHeader("Content-Type", "application/json");
@@ -137,7 +147,7 @@ public class ClientTest {
                 // stateMachineLock.lock();
                 // System.err.println("???");
                 CloseableHttpClient client = HttpClients.createDefault();
-                HttpGet httpGet = new HttpGet(OP_URL + "?documentId=" + FILE_NAME + "&version=" + new Integer(ver).toString());
+                HttpGet httpGet = new HttpGet(OP_URL[index] + "?documentId=" + FILE_NAME + "&version=" + new Integer(ver).toString());
                 try {
                     CloseableHttpResponse response1 = client.execute(httpGet);
                     HttpEntity entity1 = response1.getEntity();
@@ -198,7 +208,7 @@ public class ClientTest {
                             data.version = ver;
                             outstandingOp = data;
                             CloseableHttpClient client = HttpClients.createDefault();
-                            HttpPost httpPost = new HttpPost(OP_URL);
+                            HttpPost httpPost = new HttpPost(OP_URL[index]);
                             try {
                                 StringEntity params = new StringEntity(gson.toJson(outstandingOp));
                                 httpPost.addHeader("Content-Type", "application/json");
@@ -227,18 +237,23 @@ public class ClientTest {
         }
     }
 
-    static final int CLIENT_AMOUNT = 10;
+    static final int CLIENT_AMOUNT = 2;
     static final String FILE_NAME = "File";
-    static final String DOCUMENT_URL = "http://localhost:8080/documents";
+    // static final String DOCUMENT_URL = "http://localhost:5000/documents";
 
     public ClientTest init() {
-        HttpPost httpPost = new HttpPost(DOCUMENT_URL + "?name=" + FILE_NAME);
-        CloseableHttpClient client = HttpClients.createDefault();
-        try {
-            CloseableHttpResponse response1 = client.execute(httpPost);
-            Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
-        } catch (IOException e) {
-            Assert.fail(e.getMessage());
+        String[] DOCUMENT_URL = new String[2];
+        DOCUMENT_URL[0] = "http://localhost:5000/documents";
+        DOCUMENT_URL[1] = "http://localhost:6000/documents";
+        for (int i = 0; i < 2; i++) {
+            HttpPost httpPost = new HttpPost(DOCUMENT_URL[i] + "?name=" + FILE_NAME);
+            CloseableHttpClient client = HttpClients.createDefault();
+            try {
+                CloseableHttpResponse response1 = client.execute(httpPost);
+                Assert.assertTrue(response1.getStatusLine().getStatusCode() == 200);
+            } catch (IOException e) {
+                Assert.fail(e.getMessage());
+            }
         }
         return this;
     }
@@ -455,7 +470,7 @@ public class ClientTest {
     public void integrationTest() {
         List<Client> clientList = new ArrayList<Client>();
         for (int i = 0; i < CLIENT_AMOUNT; i++) {
-            clientList.add(new Client(String.format("user%d", i), true, String.format("%d", i%10))
+            clientList.add(new Client(String.format("user%d", i), true, String.format("%d", i%10), i%2)
                             .init()
                         );
         }
